@@ -40,13 +40,13 @@ public class PopulatorFlowers extends BlockPopulator {
 				final int flower_z = random.nextInt(15);
 
 				final Block handle = world.getBlockAt(flower_x + source.getX() * 16, world.getHighestBlockYAt(flower_x + source.getX() * 16, flower_z + source.getZ() * 16), flower_z + source.getZ() * 16);
-				if (handle.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS)) {
-					if (type < 33) {
-						handle.setType(Material.RED_ROSE);
-					} else {
-						handle.setType(Material.YELLOW_FLOWER);
-					}
-				}
+                                if (handle.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS_BLOCK)) {
+                                        if (type < 33) {
+                                                handle.setType(Material.POPPY);
+                                        } else {
+                                                handle.setType(Material.DANDELION);
+                                        }
+                                }
 			}
 		}
 	}
