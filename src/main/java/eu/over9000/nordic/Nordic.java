@@ -33,7 +33,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Logger;
 
 /**
  * Main class of Nordic
@@ -41,8 +40,7 @@ import java.util.logging.Logger;
  * @author simplex
  */
 public class Nordic extends JavaPlugin {
-	private final Logger log = Logger.getLogger("Minecraft");
-	private NordicChunkGenerator wgen;
+        private NordicChunkGenerator wgen;
 
 	private static final String DEFAULT_WORLD_NAME = "world_nordic";
 	private static final String WORLD_PREFIX = "world_";
@@ -94,9 +92,9 @@ public class Nordic extends JavaPlugin {
 				worldName = WORLD_PREFIX + worldName;
 			}
 
-			player.sendMessage(ChatColor.BLUE + "[Nordic] Generating/loading world " + ChatColor.WHITE + worldName + ChatColor.BLUE + " with seed " + ChatColor.WHITE + seed + ChatColor.BLUE + "...");
-			final World world = WorldCreator.name(worldName).environment(Environment.NORMAL).seed(seed).generator(wgen).createWorld();
-			log.info("[Nordic] " + player.getName() + " created/loaded world: " + worldName + " with seed " + world.getSeed());
+                        player.sendMessage(ChatColor.BLUE + "[Nordic] Generating/loading world " + ChatColor.WHITE + worldName + ChatColor.BLUE + " with seed " + ChatColor.WHITE + seed + ChatColor.BLUE + "...");
+                        final World world = WorldCreator.name(worldName).environment(Environment.NORMAL).seed(seed).generator(wgen).createWorld();
+                        getLogger().info("[Nordic] " + player.getName() + " created/loaded world: " + worldName + " with seed " + world.getSeed());
 
 			player.sendMessage(ChatColor.BLUE + "[Nordic] done, teleporting to spawn of the generated world");
 			player.teleport(world.getSpawnLocation());
@@ -121,10 +119,11 @@ public class Nordic extends JavaPlugin {
 		populators.add(new PopulatorCustomTrees());
 		populators.add(new PopulatorTrees());
 		populators.add(new PopulatorFlowers());
-		populators.add(new PopulatorMushrooms());
-		populators.add(new PopulatorLonggrass());
-		return populators;
-	}
+                populators.add(new PopulatorMushrooms());
+                populators.add(new PopulatorLonggrass());
+                populators.add(new PopulatorSnow());
+                return populators;
+        }
 
 	/**
 	 * Builds a seed from a string
@@ -140,11 +139,14 @@ public class Nordic extends JavaPlugin {
 		}
 	}
 
-	@Override
-	public ChunkGenerator getDefaultWorldGenerator(final String worldName, final String id) {
-		log.info("[Nordic] getDefaultWorldGenerator(" + worldName + ")");
-		return wgen;
-	}
+        @Override
+        public ChunkGenerator getDefaultWorldGenerator(final String worldName, final String id) {
+                getLogger().info("[Nordic] getDefaultWorldGenerator(" + worldName + ")");
+                if (wgen == null) {
+                        wgen = new NordicChunkGenerator(populators);
+                }
+                return wgen;
+        }
 
 }
 
