@@ -45,10 +45,12 @@ public class PopulatorCustomTrees extends BlockPopulator {
 
                 // occasionally spawn a custom large spruce tree
                 if (random.nextInt(100) < 10) {
-                        final int x = 4 + random.nextInt(8) + source.getX() * 16;
-                        final int z = 4 + random.nextInt(8) + source.getZ() * 16;
+                        final int relX = 4 + random.nextInt(8);
+                        final int relZ = 4 + random.nextInt(8);
+                        final int x = relX + source.getX() * 16;
+                        final int z = relZ + source.getZ() * 16;
 
-                        final Block ground = findGround(world, x, z);
+                        final Block ground = findGround(source, relX, relZ);
                         final Material groundType = ground.getType();
                         if (groundType == Material.WATER || groundType == Material.LAVA) {
                                 return;
@@ -323,8 +325,10 @@ public class PopulatorCustomTrees extends BlockPopulator {
                 }
         }
 
-        private static Block findGround(final World world, final int x, final int z) {
-                Block block = world.getHighestBlockAt(x, z);
+        private static Block findGround(final Chunk chunk, final int relX, final int relZ) {
+                final World world = chunk.getWorld();
+                int y = world.getMaxHeight() - 1;
+                Block block = chunk.getBlock(relX, y, relZ);
                 while (block.getY() > world.getMinHeight() && isTreeMaterial(block.getType())) {
                         block = block.getRelative(BlockFace.DOWN);
                 }

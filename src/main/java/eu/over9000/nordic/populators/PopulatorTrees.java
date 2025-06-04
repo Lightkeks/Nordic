@@ -32,10 +32,10 @@ public class PopulatorTrees extends BlockPopulator {
                 // spawn large spruce trees but with a lower base amount
                 final int largeTrees = 3 + random.nextInt(4); // 3-6
                 for (int t = 0; t < largeTrees; t++) {
-                        final int treeX = random.nextInt(15) + source.getX() * 16;
-                        final int treeZ = random.nextInt(15) + source.getZ() * 16;
+                        final int relX = 3 + random.nextInt(10);
+                        final int relZ = 3 + random.nextInt(10);
 
-                        final Block ground = findGround(world, treeX, treeZ);
+                        final Block ground = findGround(source, relX, relZ);
                         final Material groundType = ground.getType();
                         if (groundType == Material.WATER || groundType == Material.LAVA) {
                                 continue;
@@ -50,10 +50,10 @@ public class PopulatorTrees extends BlockPopulator {
                 // spawn small spruce trees in a reduced quantity
                 final int smallTrees = 15 + random.nextInt(10); // 15-24
                 for (int t = 0; t < smallTrees; t++) {
-                        final int treeX = random.nextInt(15) + source.getX() * 16;
-                        final int treeZ = random.nextInt(15) + source.getZ() * 16;
+                        final int relX = 3 + random.nextInt(10);
+                        final int relZ = 3 + random.nextInt(10);
 
-                        final Block ground = findGround(world, treeX, treeZ);
+                        final Block ground = findGround(source, relX, relZ);
                         final Material groundType = ground.getType();
                         if (groundType == Material.WATER || groundType == Material.LAVA) {
                                 continue;
@@ -93,8 +93,10 @@ public class PopulatorTrees extends BlockPopulator {
                 }
         }
 
-        private Block findGround(final World world, final int x, final int z) {
-                Block block = world.getHighestBlockAt(x, z);
+        private Block findGround(final Chunk chunk, final int relX, final int relZ) {
+                final World world = chunk.getWorld();
+                int y = world.getMaxHeight() - 1;
+                Block block = chunk.getBlock(relX, y, relZ);
                 while (block.getY() > world.getMinHeight() && isTreeMaterial(block.getType())) {
                         block = block.getRelative(BlockFace.DOWN);
                 }
