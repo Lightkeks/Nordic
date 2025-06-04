@@ -25,6 +25,7 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.generator.ChunkGenerator.ChunkData;
 import org.bukkit.util.noise.SimplexOctaveGenerator;
 
 import java.util.List;
@@ -41,7 +42,8 @@ public class NordicChunkGenerator extends ChunkGenerator {
 	private SimplexOctaveGenerator genBase1;
 	private SimplexOctaveGenerator genBase2;
 	private SimplexOctaveGenerator genHills;
-	private SimplexOctaveGenerator genGround;
+        private SimplexOctaveGenerator genGround;
+        private SimplexOctaveGenerator genCliffs;
 
 	private Voronoi voronoiGenBase1;
 	private Voronoi voronoiGenBase2;
@@ -65,30 +67,19 @@ public class NordicChunkGenerator extends ChunkGenerator {
 	/**
 	 * Sets the Material at the given Location
 	 */
-	private static void setMaterialAt(final byte[][] chunk_data, final int x, final int y, final int z, final Material material) {
-		final int sec_id = (y >> 4);
-		final int yy = y & 0xF;
-		if (chunk_data[sec_id] == null) {
-			chunk_data[sec_id] = new byte[4096];
-		}
-		chunk_data[sec_id][(yy << 8) | (z << 4) | x] = (byte) material.getId();
-	}
+        private static void setMaterialAt(final ChunkData chunkData, final int x, final int y, final int z, final Material material) {
+                chunkData.setBlock(x, y, z, material);
+        }
 
-	private static Material getMaterialAt(final byte[][] chunk_data, final int x, final int y, final int z) {
-		final int sec_id = (y >> 4);
-		final int yy = y & 0xF;
-		if (chunk_data[sec_id] == null) {
-			return Material.AIR;
-		} else {
-			return Material.getMaterial(chunk_data[sec_id][(yy << 8) | (z << 4) | x]);
-		}
-	}
+        private static Material getMaterialAt(final ChunkData chunkData, final int x, final int y, final int z) {
+                return chunkData.getType(x, y, z);
+        }
 
 	@Override
-	public byte[][] generateBlockSections(final World world, final Random random, final int x_chunk, final int z_chunk, final BiomeGrid biomes) {
-		checkSeed(world.getSeed());
+        public ChunkData generateChunkData(final World world, final Random random, final int x_chunk, final int z_chunk, final BiomeGrid biomes) {
+                checkSeed(world.getSeed());
 
-		final byte[][] result = new byte[16][];
+                final ChunkData result = createChunkData(world);
 
 		int currheight;
 
@@ -113,11 +104,14 @@ public class NordicChunkGenerator extends ChunkGenerator {
 				// Some shiny hills
 				currheight = Math.max(currheight, genHills(x, z, x_chunk, z_chunk, currheight, genHills));
 
-				// Some mountains
-				currheight = Math.max(currheight, genMountains(x, z, x_chunk, z_chunk, currheight, voronoiGenMountains));
+                                // Some mountains
+                                currheight = Math.max(currheight, genMountains(x, z, x_chunk, z_chunk, currheight, voronoiGenMountains));
 
-				// Some highlands
-				currheight = Math.max(currheight, genHighlands(x, z, x_chunk, z_chunk, currheight, genHighland));
+                                // Steep cliffs and fjords
+                                currheight = genCliffs(x, z, x_chunk, z_chunk, currheight, genCliffs);
+
+                                // Some highlands
+                                currheight = Math.max(currheight, genHighlands(x, z, x_chunk, z_chunk, currheight, genHighland));
 
 				// ############################## Heightmap end
 				// ##############################
@@ -126,16 +120,16 @@ public class NordicChunkGenerator extends ChunkGenerator {
 				// ##############################
 
 				// Apply Heightmap
-				applyHeightMap(x, z, result, currheight);
+                            applyHeightMap(x, z, result, currheight);
 
 				// Build bedrock floor
-				genFloor(x, z, result);
+                            genFloor(x, z, result);
 
 				// Add a layer of grass and dirt & blank mountains
-				genTopLayer(x, z, result, currheight);
+                            genTopLayer(x, z, result, currheight);
 
 				// Put the water in
-				genWater(x, z, result);
+                            genWater(x, z, result);
 
 				// ############################## Build the chunk end
 				// ##############################
@@ -143,41 +137,41 @@ public class NordicChunkGenerator extends ChunkGenerator {
 				// ############################## Set the biome
 				// ##############################
 
-				biomes.setBiome(x, z, Biome.FOREST);
+                                biomes.setBiome(x, z, Biome.SNOWY_TAIGA);
 
 				// ############################## Set the biome end
 				// ##############################
 			}
 		}
-		return result;
-	}
+                return result;
+        }
 
 	/**
 	 * Writes the Value from the heightmap to the Chunk byte array
 	 */
-	private void applyHeightMap(final int x, final int z, final byte[][] chunk_data, final int currheight) {
-		for (int y = 0; y <= currheight; y++) {
-			setMaterialAt(chunk_data, x, y, z, Material.STONE);
-		}
-	}
+        private void applyHeightMap(final int x, final int z, final ChunkData chunkData, final int currheight) {
+                for (int y = 0; y <= currheight; y++) {
+                        setMaterialAt(chunkData, x, y, z, Material.STONE);
+                }
+        }
 
 	/**
 	 * Generates the bedrock floor
 	 */
-	private void genFloor(final int x, final int z, final byte[][] chunk_data) {
-		for (int y = 0; y < 5; y++) {
-			if (y < 3) { // build solid bedrock floor
-				setMaterialAt(chunk_data, x, y, z, Material.BEDROCK);
-			} else { // build 2 block height mix floor
-				final int rnd = new Random().nextInt(100);
-				if (rnd < 40) {
-					setMaterialAt(chunk_data, x, y, z, Material.BEDROCK);
-				} else {
-					setMaterialAt(chunk_data, x, y, z, Material.STONE);
-				}
-			}
-		}
-	}
+        private void genFloor(final int x, final int z, final ChunkData chunkData) {
+                for (int y = 0; y < 5; y++) {
+                        if (y < 3) { // build solid bedrock floor
+                                setMaterialAt(chunkData, x, y, z, Material.BEDROCK);
+                        } else { // build 2 block height mix floor
+                                final int rnd = new Random().nextInt(100);
+                                if (rnd < 40) {
+                                        setMaterialAt(chunkData, x, y, z, Material.BEDROCK);
+                                } else {
+                                        setMaterialAt(chunkData, x, y, z, Material.STONE);
+                                }
+                        }
+                }
+        }
 
 	/**
 	 * Generates some changes to the Continental Areas
@@ -214,14 +208,28 @@ public class NordicChunkGenerator extends ChunkGenerator {
 	/**
 	 * Generates the higher Hills
 	 */
-	private int genMountains(final int x, final int z, final int xChunk, final int zChunk, final int current_height, final Voronoi noisegen) {
-		final double noise = noisegen.get((x + xChunk * 16) / 250.0f, (z + zChunk * 16) / 250.0f) * 100;
-		final int limit = (int) (current_height + noise);
-		if (limit < 30) {
-			return 0;
-		}
-		return limit;
-	}
+        private int genMountains(final int x, final int z, final int xChunk, final int zChunk, final int current_height, final Voronoi noisegen) {
+                final double noise = noisegen.get((x + xChunk * 16) / 250.0f, (z + zChunk * 16) / 250.0f) * 100;
+                final int limit = (int) (current_height + noise);
+                if (limit < 30) {
+                        return 0;
+                }
+                return limit;
+        }
+
+        /**
+         * Adds steep cliffs and occasional fjord valleys
+         */
+        private int genCliffs(final int x, final int z, final int xChunk, final int zChunk, final int current_height, final SimplexOctaveGenerator gen) {
+                final double noise = gen.noise((x + xChunk * 16) / 150.0f, (z + zChunk * 16) / 150.0f, 0.5, 0.5) * 20;
+                int result = (int) (current_height + noise);
+                if (result < 34) {
+                        result = 34;
+                } else if (result > 120) {
+                        result = 120;
+                }
+                return result;
+        }
 
 	/**
 	 * Generates the Continental-base
@@ -240,40 +248,40 @@ public class NordicChunkGenerator extends ChunkGenerator {
 	/**
 	 * Puts a Dirt/Grass Layer over the Chunk
 	 */
-	private void genTopLayer(final int x, final int z, final byte[][] chunk_data, final int height) {
-		boolean grass = true;
-		if (height < 48) {
-			grass = false;
-		}
-		final Random rnd = new Random();
-		if (height > 80) {
-			return;
-		}
-		if (height <= 77 || rnd.nextBoolean()) {
-			final int soil_depth = rnd.nextInt(4);
-			if (grass) {
-				setMaterialAt(chunk_data, x, height, z, Material.GRASS);
-			} else {
-				setMaterialAt(chunk_data, x, height, z, Material.DIRT);
-			}
-			for (int y = height - 1; y >= height - soil_depth; y--) {
-				setMaterialAt(chunk_data, x, y, z, Material.DIRT);
-			}
-		}
-	}
+        private void genTopLayer(final int x, final int z, final ChunkData chunkData, final int height) {
+                boolean grass = true;
+                if (height < 48) {
+                        grass = false;
+                }
+                final Random rnd = new Random();
+                if (height > 80) {
+                        return;
+                }
+                if (height <= 77 || rnd.nextBoolean()) {
+                        final int soil_depth = rnd.nextInt(4);
+                        if (grass) {
+                                setMaterialAt(chunkData, x, height, z, Material.GRASS_BLOCK);
+                        } else {
+                                setMaterialAt(chunkData, x, height, z, Material.DIRT);
+                        }
+                        for (int y = height - 1; y >= height - soil_depth; y--) {
+                                setMaterialAt(chunkData, x, y, z, Material.DIRT);
+                        }
+                }
+        }
 
 	/**
 	 * Fills the Oceans with water
 	 */
-	private void genWater(final int x, final int z, final byte[][] chunk_data) {
-		int y = 48;
-		while (y > 29) {
-			if (getMaterialAt(chunk_data, x, y, z) == Material.AIR) {
-				setMaterialAt(chunk_data, x, y, z, Material.STATIONARY_WATER);
-			}
-			y--;
-		}
-	}
+        private void genWater(final int x, final int z, final ChunkData chunkData) {
+                int y = 48;
+                while (y > 29) {
+                        if (getMaterialAt(chunkData, x, y, z) == Material.AIR) {
+                                setMaterialAt(chunkData, x, y, z, Material.WATER);
+                        }
+                        y--;
+                }
+        }
 
 	@Override
 	public List<BlockPopulator> getDefaultPopulators(final World world) {
@@ -283,12 +291,13 @@ public class NordicChunkGenerator extends ChunkGenerator {
 	/**
 	 * Sets the Noise generators to use the specified seed
 	 */
-	public void changeSeed(final long seed) {
-		genHighland = new SimplexOctaveGenerator(new Random(seed), 16);
-		genBase1 = new SimplexOctaveGenerator(new Random(seed), 16);
-		genBase2 = new SimplexOctaveGenerator(new Random(seed), 16);
-		genHills = new SimplexOctaveGenerator(new Random(seed), 4);
-		genGround = new SimplexOctaveGenerator(new Random(seed), 16);
+        public void changeSeed(final long seed) {
+                genHighland = new SimplexOctaveGenerator(new Random(seed), 16);
+                genBase1 = new SimplexOctaveGenerator(new Random(seed), 16);
+                genBase2 = new SimplexOctaveGenerator(new Random(seed), 16);
+                genHills = new SimplexOctaveGenerator(new Random(seed), 4);
+                genGround = new SimplexOctaveGenerator(new Random(seed), 16);
+                genCliffs = new SimplexOctaveGenerator(new Random(seed), 8);
 
 		voronoiGenBase1 = new Voronoi(64, true, seed, 16, DistanceMetric.Squared, 4);
 		voronoiGenBase2 = new Voronoi(64, true, seed, 16, DistanceMetric.Quadratic, 4);
