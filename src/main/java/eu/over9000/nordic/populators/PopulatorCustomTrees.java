@@ -43,7 +43,8 @@ public class PopulatorCustomTrees extends BlockPopulator {
 	@Override
 	public void populate(final World world, final Random random, final Chunk source) {
 
-		if (random.nextInt(100) < 2) {
+                // slightly raise the chance for large custom spruce trees
+                if (random.nextInt(100) < 10) {
 			final int x = 4 + random.nextInt(8) + source.getX() * 16;
 			final int z = 4 + random.nextInt(8) + source.getZ() * 16;
                         final Block high = world.getHighestBlockAt(x, z);

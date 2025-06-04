@@ -29,7 +29,8 @@ public class PopulatorTrees extends BlockPopulator {
 
 	@Override
 	public void populate(final World world, final Random random, final Chunk source) {
-                final int treecount = 1 + random.nextInt(3);
+                // increase the amount of trees per chunk
+                final int treecount = 3 + random.nextInt(4);
 
 		for (int t = 0; t <= treecount; t++) {
 			final int tree_x = random.nextInt(15);
