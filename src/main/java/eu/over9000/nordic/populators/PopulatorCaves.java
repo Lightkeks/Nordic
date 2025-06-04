@@ -70,24 +70,24 @@ public class PopulatorCaves extends BlockPopulator {
 
 			if (random.nextInt(20) == 0) {
 				blockY++;
-			} else if (world.getBlockTypeIdAt(blockX, blockY + 2, blockZ) == 0) {
-				blockY += 2;
-			} else if (world.getBlockTypeIdAt(blockX + 2, blockY, blockZ) == 0) {
-				blockX++;
-			} else if (world.getBlockTypeIdAt(blockX - 2, blockY, blockZ) == 0) {
-				blockX--;
-			} else if (world.getBlockTypeIdAt(blockX, blockY, blockZ + 2) == 0) {
-				blockZ++;
-			} else if (world.getBlockTypeIdAt(blockX, blockY, blockZ - 2) == 0) {
-				blockZ--;
-			} else if (world.getBlockTypeIdAt(blockX + 1, blockY, blockZ) == 0) {
-				blockX++;
-			} else if (world.getBlockTypeIdAt(blockX - 1, blockY, blockZ) == 0) {
-				blockX--;
-			} else if (world.getBlockTypeIdAt(blockX, blockY, blockZ + 1) == 0) {
-				blockZ++;
-			} else if (world.getBlockTypeIdAt(blockX, blockY, blockZ - 1) == 0) {
-				blockZ--;
+                        } else if (world.getBlockAt(blockX, blockY + 2, blockZ).isEmpty()) {
+                            blockY += 2;
+                        } else if (world.getBlockAt(blockX + 2, blockY, blockZ).isEmpty()) {
+                            blockX++;
+                        } else if (world.getBlockAt(blockX - 2, blockY, blockZ).isEmpty()) {
+                            blockX--;
+                        } else if (world.getBlockAt(blockX, blockY, blockZ + 2).isEmpty()) {
+                            blockZ++;
+                        } else if (world.getBlockAt(blockX, blockY, blockZ - 2).isEmpty()) {
+                            blockZ--;
+                        } else if (world.getBlockAt(blockX + 1, blockY, blockZ).isEmpty()) {
+                            blockX++;
+                        } else if (world.getBlockAt(blockX - 1, blockY, blockZ).isEmpty()) {
+                            blockX--;
+                        } else if (world.getBlockAt(blockX, blockY, blockZ + 1).isEmpty()) {
+                            blockZ++;
+                        } else if (world.getBlockAt(blockX, blockY, blockZ - 1).isEmpty()) {
+                            blockZ--;
 			} else if (random.nextBoolean()) {
 				if (random.nextBoolean()) {
 					blockX++;
@@ -102,14 +102,14 @@ public class PopulatorCaves extends BlockPopulator {
 				}
 			}
 
-			if (world.getBlockTypeIdAt(blockX, blockY, blockZ) != 0) {
+                        if (!world.getBlockAt(blockX, blockY, blockZ).isEmpty()) {
 				final int radius = 1 + random.nextInt(2);
 				final int radius2 = radius * radius + 1;
 				for (int x = -radius; x <= radius; x++) {
 					for (int y = -radius; y <= radius; y++) {
 						for (int z = -radius; z <= radius; z++) {
 							if (x * x + y * y + z * z <= radius2 && y >= 0 && y < 128) {
-								if (world.getBlockTypeIdAt(blockX + x, blockY + y, blockZ + z) == 0) {
+                                                                if (world.getBlockAt(blockX + x, blockY + y, blockZ + z).isEmpty()) {
 									airHits++;
 								} else {
 									block.x = blockX + x;
