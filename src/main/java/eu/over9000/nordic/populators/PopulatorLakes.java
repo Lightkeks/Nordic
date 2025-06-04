@@ -19,13 +19,11 @@
 package eu.over9000.nordic.populators;
 
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.generator.BlockPopulator;
-import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,11 +34,9 @@ public class PopulatorLakes extends BlockPopulator {
 	private static final int MIN_BLOCK_COUNT = 450;
 	private static final int MAX_BLOCK_COUNT = 900;
 	private static final int LAKE_CHANCE = 3;
-	private static final int CREEK_CHANCE = 85;
-	private static final int MAX_CREEK_LENGTH = 125;
 
-	private static final EnumSet<Material> TREE_MATERIALS = EnumSet.of(Material.LOG, Material.LEAVES);
-	private static final EnumSet<Material> GROUND_MATERIALS = EnumSet.of(Material.DIRT, Material.GRASS);
+        private static final EnumSet<Material> TREE_MATERIALS = EnumSet.of(Material.OAK_LOG, Material.OAK_LEAVES);
+        private static final EnumSet<Material> GROUND_MATERIALS = EnumSet.of(Material.DIRT, Material.GRASS_BLOCK);
 	private static final EnumSet<BlockFace> FACES_TO_CHECK = EnumSet.of(BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH);
 
 
@@ -64,127 +60,13 @@ public class PopulatorLakes extends BlockPopulator {
 		if (form_result == null) {
 			return;
 		}
-		final Block creek_start = buildLake(form_result[0], random);
+                buildLake(form_result[0], random);
 
 		buildAirAndWaterfall(form_result[0], form_result[1], random);
 
-		//if (creek_start == null || random.nextInt(100) >= CREEK_CHANCE) {
-		//return;
-		//}
 
-//		final List<Block> creekblocks = collectCreekBlocks(world, creek_start, random);
-//		if (creekblocks != null) {
-//			buildCreek(world, creekblocks);
-//		}
 	}
 
-	private List<Block> collectCreekBlocks(final World world, final Block creekStart, final Random random) {
-		final int check_radius = 7;
-		Vector main_dir = null;
-
-		// Get the "main" direction
-		int highest_diff = 0;
-		for (int mod_x = -check_radius; mod_x <= check_radius; mod_x++) {
-			for (int mod_z = -check_radius; mod_z <= check_radius; mod_z++) {
-				final Block toCheck = world.getHighestBlockAt(mod_x + creekStart.getX(), mod_z + creekStart.getZ());
-				final int diff = creekStart.getY() - toCheck.getY();
-				if (diff > highest_diff) {
-					highest_diff = diff;
-					main_dir = new Vector(toCheck.getX() - creekStart.getX(), 0, toCheck.getZ() - creekStart.getZ());
-				}
-			}
-		}
-		if (main_dir != null) {
-			final List<Block> creekblocks = new ArrayList<>();
-			Location creek_current_center = creekStart.getRelative(0, 10, 0).getLocation();
-			main_dir = main_dir.normalize().multiply(2);
-			int steps = 0;
-			while (!world.getHighestBlockAt(creek_current_center).getRelative(0, -1, 0).isLiquid() && steps < MAX_CREEK_LENGTH) {
-				creekblocks.add(creek_current_center.getBlock());
-				creek_current_center = creek_current_center.add(main_dir);
-				main_dir = rotateVector(main_dir, random.nextDouble() * 0.5 - 0.25);
-				steps++;
-			}
-			if (steps < MAX_CREEK_LENGTH) {
-				return creekblocks;
-			}
-		}
-		return null;
-	}
-
-	private void buildCreek(final World world, final List<Block> center_blocks) {
-		final Set<Block> collected_blocks_air = new HashSet<>();
-		final Set<Block> collected_blocks_water = new HashSet<>();
-
-		final int radius = 3;
-		final int radius_squared = 9;
-		int last_y = world.getMaxHeight();
-
-		final Set<Block> circle = new HashSet<>();
-		for (final Block center : center_blocks) {
-			circle.clear();
-			for (int x_mod = -radius; x_mod <= radius; x_mod++) {
-				for (int z_mod = -radius; z_mod <= radius; z_mod++) {
-					if ((x_mod * x_mod + z_mod * z_mod) < radius_squared) {
-						circle.add(center.getRelative(x_mod, 0, z_mod));
-					}
-				}
-			}
-			int lowest = world.getMaxHeight();
-			int highest = 0;
-			for (final Block block : circle) {
-
-				final int x = block.getX();
-				final int z = block.getZ();
-				final int compare = world.getHighestBlockYAt(x, z);
-
-				if (compare < lowest) {
-					lowest = compare;
-				}
-				if (compare > highest) {
-					highest = compare;
-				}
-			}
-
-			if (lowest > last_y) {
-				lowest = last_y;
-			} else {
-				last_y = lowest;
-				if (last_y < 48) {
-					last_y = 48;
-					lowest = 48;
-				}
-			}
-			for (final Block block : circle) {
-				collected_blocks_water.add(world.getBlockAt(block.getX(), lowest - 3, block.getZ()));
-				for (int y = lowest - 2; y <= highest; y++) {
-					collected_blocks_air.add(world.getBlockAt(block.getX(), y, block.getZ()));
-				}
-			}
-		}
-
-		//actually build it
-		for (final Block toWater : collected_blocks_water) {
-			toWater.setType(Material.WATER);
-		}
-		for (final Block toAir : collected_blocks_air) {
-			if (toAir.getY() <= 48) {
-				toAir.setType(Material.WATER);
-			} else if (toAir.getType() != Material.LOG &&
-					toAir.getType() != Material.LEAVES &&
-					toAir.getType() != Material.RED_MUSHROOM &&
-					toAir.getType() != Material.VINE &&
-					toAir.getType() != Material.GLOWSTONE) {
-				toAir.setType(Material.AIR);
-			}
-		}
-	}
-
-	private Vector rotateVector(final Vector dir, final double angle) {
-		final double new_x = dir.getX() * Math.cos(angle) - dir.getZ() * Math.sin(angle);
-		final double new_z = dir.getX() * Math.sin(angle) + dir.getZ() * Math.cos(angle);
-		return new Vector(new_x, 0, new_z);
-	}
 
 	private Set<Block> collectLakeLayout(final World world, final Block start, final Random random) {
 		final Set<Block> result = new HashSet<>();
@@ -332,7 +214,6 @@ public class PopulatorLakes extends BlockPopulator {
 	private Block buildLake(Set<Block> top_layer, final Random random) {
 		final int max_lake_depth = random.nextInt(2) + 3;
 
-		//Make sure the lake has a border 
 		final Set<Block> to_air = new HashSet<>();
 		int lowering = 0;
 		while (!sliceHasBorder(top_layer) && lowering <= 3) {
@@ -344,12 +225,10 @@ public class PopulatorLakes extends BlockPopulator {
 			block.setType(Material.AIR);
 		}
 
-		//Build the First water layer
-		for (final Block block : top_layer) {
-			block.setType(Material.STATIONARY_WATER);
-		}
+                for (final Block block : top_layer) {
+                        block.setType(Material.WATER);
+                }
 
-		// "Stepped" Ground
 		Set<Block> working_layer = lower_layer(top_layer);
 
 		for (int mod_y = 0; mod_y > -max_lake_depth; mod_y--) {
@@ -361,22 +240,18 @@ public class PopulatorLakes extends BlockPopulator {
 					}
 				} else {
 					next_layer.add(block.getRelative(0, -1, 0));
-					block.setType(Material.STATIONARY_WATER);
+                                        block.setType(Material.WATER);
 				}
 			}
 			working_layer = next_layer;
 		}
 
-		//Ground of the lake
 		working_layer.stream().filter(block -> !block.isLiquid()).forEach(block -> block.setType(Material.DIRT));
 
-		//Return the start point for a possible creek, null if this lake doesn't have a suitable block
 		for (final Block block : top_layer) {
 			if (checkBlockIsOnBorderOfSlice(block, top_layer)) {
 				final Block candidate = block.getRelative(getUncontainedBlockFace(block, top_layer));
 				if (candidate.getRelative(BlockFace.UP).isEmpty()) {
-//					System.out.println("startpoint found");
-//					candidate.setType(Material.GLOWSTONE);
 					return candidate;
 				}
 			}
