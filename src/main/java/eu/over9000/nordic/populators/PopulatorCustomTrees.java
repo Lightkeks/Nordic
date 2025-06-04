@@ -44,7 +44,7 @@ public class PopulatorCustomTrees extends BlockPopulator {
 	public void populate(final World world, final Random random, final Chunk source) {
 
                 // occasionally spawn a custom large spruce tree
-                if (random.nextInt(100) < 10) {
+                if (random.nextInt(100) < 20) {
                         final int relX = 4 + random.nextInt(8);
                         final int relZ = 4 + random.nextInt(8);
                         final int x = relX + source.getX() * 16;
