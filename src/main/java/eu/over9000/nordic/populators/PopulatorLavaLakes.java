@@ -56,7 +56,7 @@ public class PopulatorLavaLakes extends BlockPopulator {
 		final int ry = random.nextInt(20) + 20;
 		final int radius = 2 + random.nextInt(4);
 
-		final Material solidMaterial = Material.STATIONARY_LAVA;
+                final Material solidMaterial = Material.LAVA;
 
 		final ArrayList<Block> lakeBlocks = new ArrayList<>();
 		for (int i = -1; i < 4; i++) {

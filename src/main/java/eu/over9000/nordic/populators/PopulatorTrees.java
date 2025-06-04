@@ -27,25 +27,60 @@ import java.util.Random;
 
 public class PopulatorTrees extends BlockPopulator {
 
-	@Override
-	public void populate(final World world, final Random random, final Chunk source) {
-		final int treecount = random.nextInt(3);
+        @Override
+        public void populate(final World world, final Random random, final Chunk source) {
+                // spawn large spruce trees with a wider random range
+                final int largeTrees = 6 + random.nextInt(8); // 6-13
+                for (int t = 0; t < largeTrees; t++) {
+                        final int treeX = random.nextInt(15) + source.getX() * 16;
+                        final int treeZ = random.nextInt(15) + source.getZ() * 16;
 
-		for (int t = 0; t <= treecount; t++) {
-			final int tree_x = random.nextInt(15);
-			final int tree_z = random.nextInt(15);
+                        final Block ground = findGround(world, treeX, treeZ);
+                        final Material groundType = ground.getType();
+                        if (groundType == Material.WATER || groundType == Material.LAVA) {
+                                continue;
+                        }
+                        if (groundType != Material.GRASS_BLOCK && groundType != Material.DIRT) {
+                                ground.setType(Material.GRASS_BLOCK, false);
+                        }
 
-			final Block block = world.getHighestBlockAt(tree_x + source.getX() * 16, tree_z + source.getZ() * 16);
-			final Location high = block.getLocation();
-			if (!block.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS)) {
-				return;
-			}
-			if (random.nextInt(10) < 1) {
-				world.generateTree(high, TreeType.TALL_REDWOOD);
+                        final Location high = ground.getRelative(BlockFace.UP).getLocation();
+                        if (random.nextBoolean()) {
+                                world.generateTree(high, TreeType.TALL_REDWOOD);
+                        } else {
+                                world.generateTree(high, TreeType.REDWOOD);
+                        }
+                }
 
-			} else {
-				world.generateTree(high, TreeType.REDWOOD);
-			}
-		}
-	}
+                // spawn many small spruce trees everywhere, with more variety
+                final int smallTrees = 30 + random.nextInt(25); // 30-54
+                for (int t = 0; t < smallTrees; t++) {
+                        final int treeX = random.nextInt(15) + source.getX() * 16;
+                        final int treeZ = random.nextInt(15) + source.getZ() * 16;
+
+                        final Block ground = findGround(world, treeX, treeZ);
+                        final Material groundType = ground.getType();
+                        if (groundType == Material.WATER || groundType == Material.LAVA) {
+                                continue;
+                        }
+                        if (groundType != Material.GRASS_BLOCK && groundType != Material.DIRT) {
+                                ground.setType(Material.GRASS_BLOCK, false);
+                        }
+                        final Location high = ground.getRelative(BlockFace.UP).getLocation();
+                        final TreeType type = random.nextInt(5) == 0 ? TreeType.TALL_REDWOOD : TreeType.REDWOOD;
+                        world.generateTree(high, type); // smaller spruce variant
+                }
+        }
+
+        private Block findGround(final World world, final int x, final int z) {
+                Block block = world.getHighestBlockAt(x, z);
+                while (block.getY() > world.getMinHeight() && isTreeMaterial(block.getType())) {
+                        block = block.getRelative(BlockFace.DOWN);
+                }
+                return block;
+        }
+
+        private boolean isTreeMaterial(final Material mat) {
+                return mat.name().endsWith("_LOG") || mat.name().endsWith("_LEAVES");
+        }
 }
