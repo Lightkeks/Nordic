@@ -12,5 +12,5 @@ screenshots: http://imgur.com/a/r7v5x
 
 This fork targets Paper 1.21.5 and requires Java 21. Worlds can be created via Multiverse using the generator name "Nordic".
 The terrain now uses taiga biomes with spruce forests. Weather behaves normally according to the server settings.
-Tree populators create randomised spruce woodlands while keeping the overall density moderate. Large trees appear occasionally among many smaller ones. The new terrain settings raise mountains into steep cliffs and carve deep fjord-like inlets with longer creeks.
-Small spruce trees can still appear on high cliffs, but fewer trees are generated overall so forests remain navigable.
+Tree populators create randomised spruce woodlands. Large trees appear occasionally among many smaller ones. The new terrain settings raise mountains into steep cliffs and carve deep fjord-like inlets with longer creeks.
+Small spruce trees now spawn far more frequently, blanketing even high cliffs so forests feel lush and dense.

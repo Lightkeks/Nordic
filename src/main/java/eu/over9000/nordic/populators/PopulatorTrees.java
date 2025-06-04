@@ -34,7 +34,8 @@ public class PopulatorTrees extends BlockPopulator {
                final long worldSeed = world.getSeed();
                final Random seededRandom = new Random(worldSeed + source.getX() * 341873128712L + source.getZ() * 132897987541L);
 
-               final int treeCount = 3 + seededRandom.nextInt(4); // 3-6 trees per chunk
+               // spawn more small spruce trees (approx. 60% more than before)
+               final int treeCount = 5 + seededRandom.nextInt(6); // 5-10 trees per chunk
 
                for (int i = 0; i < treeCount; i++) {
                        final int x = chunkX + seededRandom.nextInt(32) - 8;
@@ -48,7 +49,8 @@ public class PopulatorTrees extends BlockPopulator {
                        final Location loc = new Location(world, x, y, z);
                        final Material below = world.getBlockAt(loc.clone().subtract(0, 1, 0)).getType();
 
-                       if (below == Material.SNOW_BLOCK || below == Material.COARSE_DIRT) {
+                       if (below == Material.SNOW_BLOCK || below == Material.COARSE_DIRT
+                                       || below == Material.GRASS_BLOCK || below == Material.DIRT) {
                                world.generateTree(loc, TreeType.REDWOOD);
                        }
                }
