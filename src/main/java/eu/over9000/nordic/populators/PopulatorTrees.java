@@ -37,7 +37,7 @@ public class PopulatorTrees extends BlockPopulator {
 
 			final Block block = world.getHighestBlockAt(tree_x + source.getX() * 16, tree_z + source.getZ() * 16);
 			final Location high = block.getLocation();
-			if (!block.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS)) {
+                        if (!block.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS_BLOCK)) {
 				return;
 			}
 			if (random.nextInt(10) < 1) {
