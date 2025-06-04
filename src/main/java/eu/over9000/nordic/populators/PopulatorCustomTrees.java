@@ -46,19 +46,17 @@ public class PopulatorCustomTrees extends BlockPopulator {
 		if (random.nextInt(100) < 2) {
 			final int x = 4 + random.nextInt(8) + source.getX() * 16;
 			final int z = 4 + random.nextInt(8) + source.getZ() * 16;
-			final Block high = world.getHighestBlockAt(x, z);
-			if (!high.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS)) {
-				return;
-			}
+                        final Block high = world.getHighestBlockAt(x, z);
+                        final Material ground = high.getRelative(BlockFace.DOWN).getType();
+                        if (ground != Material.GRASS_BLOCK && ground != Material.DIRT) {
+                                return;
+                        }
 			final int maxY = high.getY();
 			if (maxY < 55) {
 				return;
 			}
-			final Set<XYZ> snake = selectBlocksForTree(world, random, x, maxY - 5, z);
-			buildTree(world, snake.toArray(new XYZ[snake.size()]));
-			for (final XYZ block : snake) {
-				world.unloadChunkRequest(block.x / 16, block.z / 16);
-			}
+                        final Set<XYZ> snake = selectBlocksForTree(world, random, x, maxY - 5, z);
+                        buildTree(world, snake.toArray(new XYZ[snake.size()]));
 		}
 	}
 
@@ -123,7 +121,7 @@ public class PopulatorCustomTrees extends BlockPopulator {
 		for (final Integer key : sortedKeys) {
 			final ArrayList<Block> slice = slices.get(key);
 			for (final Block b : slice) {
-				b.setTypeIdAndData(17, (byte) 1, false);
+                        b.setType(Material.SPRUCE_LOG, false);
 			}
 //			if (!buildLayer1) {
 //				ArrayList<Block> toBranches = new ArrayList<Block>();
@@ -216,8 +214,8 @@ public class PopulatorCustomTrees extends BlockPopulator {
 
 		for (final Block b : blocks) {
 			final BlockFace dir = getBuildDirection(b);
-			final Block handle = b.getRelative(dir);
-			handle.setTypeIdAndData(17, (byte) 1, false);
+                        final Block handle = b.getRelative(dir);
+                        handle.setType(Material.SPRUCE_LOG, false);
 			branches.add(handle);
 			switch (dir) {
 				case NORTH:
@@ -240,7 +238,7 @@ public class PopulatorCustomTrees extends BlockPopulator {
 		}
 		if (!branches.isEmpty()) {
 			for (final Block branch : branches) {
-				branch.setTypeIdAndData(17, (byte) 1, false);
+                                branch.setType(Material.SPRUCE_LOG, false);
 				populateTreeBranch(branch, 2);
 			}
 		}
@@ -251,13 +249,13 @@ public class PopulatorCustomTrees extends BlockPopulator {
 
 		for (final Block b : blocks) {
 			final BlockFace dir = getBuildDirection(b);
-			final Block handle = b.getRelative(dir);
-			handle.setTypeIdAndData(17, (byte) 1, false);
+                        final Block handle = b.getRelative(dir);
+                        handle.setType(Material.SPRUCE_LOG, false);
 			branches.add(handle);
 		}
 		if (!branches.isEmpty()) {
 			for (final Block branch : branches) {
-				branch.setTypeIdAndData(17, (byte) 1, false);
+                                branch.setType(Material.SPRUCE_LOG, false);
 				populateTreeBranch(branch, 2);
 			}
 		}
@@ -269,11 +267,11 @@ public class PopulatorCustomTrees extends BlockPopulator {
 			branches.add(block);
 		}
 		if (!branches.isEmpty()) {
-			for (final Block branch : branches) {
-				branch.setTypeIdAndData(17, (byte) 1, false);
-				populateTreeBranch(branch, 2);
-			}
-		}
+                        for (final Block branch : branches) {
+                                branch.setType(Material.SPRUCE_LOG, false);
+                                populateTreeBranch(branch, 2);
+                        }
+                }
 	}
 
 	private static BlockFace getBuildDirection(final Block b) {
@@ -310,9 +308,9 @@ public class PopulatorCustomTrees extends BlockPopulator {
 				for (int y = -radius; y <= radius; y++) {
 					if (x * x + y * y + z * z <= radius_check) {
 						final Block b = w.getBlockAt(centerX + x, centerY + y, centerZ + z);
-						if (b.isEmpty()) {
-							b.setTypeIdAndData(18, (byte) 1, false);
-						}
+                                                if (b.isEmpty()) {
+                                                        b.setType(Material.SPRUCE_LEAVES, false);
+                                                }
 					}
 				}
 			}
