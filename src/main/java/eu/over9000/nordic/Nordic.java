@@ -94,8 +94,10 @@ public class Nordic extends JavaPlugin {
 				worldName = WORLD_PREFIX + worldName;
 			}
 
-			player.sendMessage(ChatColor.BLUE + "[Nordic] Generating/loading world " + ChatColor.WHITE + worldName + ChatColor.BLUE + " with seed " + ChatColor.WHITE + seed + ChatColor.BLUE + "...");
-			final World world = WorldCreator.name(worldName).environment(Environment.NORMAL).seed(seed).generator(wgen).createWorld();
+                        player.sendMessage(ChatColor.BLUE + "[Nordic] Generating/loading world " + ChatColor.WHITE + worldName + ChatColor.BLUE + " with seed " + ChatColor.WHITE + seed + ChatColor.BLUE + "...");
+                        final World world = WorldCreator.name(worldName).environment(Environment.NORMAL).seed(seed).generator(wgen).createWorld();
+                        world.setStorm(true);
+                        world.setWeatherDuration(24000);
 			log.info("[Nordic] " + player.getName() + " created/loaded world: " + worldName + " with seed " + world.getSeed());
 
 			player.sendMessage(ChatColor.BLUE + "[Nordic] done, teleporting to spawn of the generated world");
@@ -121,10 +123,11 @@ public class Nordic extends JavaPlugin {
 		populators.add(new PopulatorCustomTrees());
 		populators.add(new PopulatorTrees());
 		populators.add(new PopulatorFlowers());
-		populators.add(new PopulatorMushrooms());
-		populators.add(new PopulatorLonggrass());
-		return populators;
-	}
+                populators.add(new PopulatorMushrooms());
+                populators.add(new PopulatorLonggrass());
+                populators.add(new PopulatorSnow());
+                return populators;
+        }
 
 	/**
 	 * Builds a seed from a string
