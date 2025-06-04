@@ -34,11 +34,11 @@ import java.util.Random;
  *         modified by simplex
  */
 public class PopulatorOres extends BlockPopulator {
-	private static final int[] iterations = new int[]{10, 16, 20, 20, 2, 8, 1, 1, 1};
-	private static final int[] amount = new int[]{32, 32, 16, 8, 8, 7, 7, 6};
-	private static final int[] type = new int[]{Material.GRAVEL.getId(), Material.SAND.getId(), Material.COAL_ORE.getId(), Material.IRON_ORE.getId(), Material.GOLD_ORE.getId(), Material.REDSTONE_ORE.getId(), Material.DIAMOND_ORE.getId(), Material.LAPIS_ORE.getId()};
-	private static final int[] maxHeight = new int[]{128, 45, 128, 128, 32, 32, 32, 32, 16, 16, 32};
-	private static final int STONE = Material.STONE.getId();
+        private static final int[] iterations = new int[]{10, 16, 20, 20, 2, 8, 1, 1, 1};
+        private static final int[] amount = new int[]{32, 32, 16, 8, 8, 7, 7, 6};
+        private static final Material[] type = new Material[]{Material.GRAVEL, Material.SAND, Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.REDSTONE_ORE, Material.DIAMOND_ORE, Material.LAPIS_ORE};
+        private static final int[] maxHeight = new int[]{128, 45, 128, 128, 32, 32, 32, 32, 16, 16, 32};
+        private static final Material STONE = Material.STONE;
 
 	/**
 	 * @see org.bukkit.generator.BlockPopulator#populate(org.bukkit.World, java.util.Random, org.bukkit.Chunk)
@@ -52,8 +52,8 @@ public class PopulatorOres extends BlockPopulator {
 		}
 	}
 
-	private static void internal(final Chunk source, final Random random, final int originX, final int originY, final int originZ, final int amount, final int type) {
-		for (int i = 0; i < amount; i++) {
+        private static void internal(final Chunk source, final Random random, final int originX, final int originY, final int originZ, final int amount, final Material type) {
+                for (int i = 0; i < amount; i++) {
 			int x = originX + random.nextInt(amount / 2) - amount / 4;
 			final int y = originY + random.nextInt(amount / 4) - amount / 8;
 			int z = originZ + random.nextInt(amount / 2) - amount / 4;
@@ -62,10 +62,10 @@ public class PopulatorOres extends BlockPopulator {
 			if (y > 127 || y < 0) {
 				continue;
 			}
-			final Block block = source.getBlock(x, y, z);
-			if (block.getTypeId() == STONE) {
-				block.setTypeId(type, false);
-			}
-		}
-	}
+                        final Block block = source.getBlock(x, y, z);
+                        if (block.getType() == STONE) {
+                                block.setType(type, false);
+                        }
+                }
+        }
 }

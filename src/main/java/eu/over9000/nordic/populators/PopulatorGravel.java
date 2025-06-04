@@ -23,7 +23,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.generator.BlockPopulator;
 
 import java.util.EnumSet;
@@ -32,7 +31,7 @@ import java.util.Random;
 public class PopulatorGravel extends BlockPopulator {
 
 
-	private static final EnumSet<Material> valid = EnumSet.of(Material.DIRT, Material.STONE, Material.GRASS);
+        private static final EnumSet<Material> valid = EnumSet.of(Material.DIRT, Material.STONE, Material.GRASS_BLOCK);
 
 
 	@Override

@@ -43,24 +43,28 @@ public class PopulatorCustomTrees extends BlockPopulator {
 	@Override
 	public void populate(final World world, final Random random, final Chunk source) {
 
-		if (random.nextInt(100) < 2) {
-			final int x = 4 + random.nextInt(8) + source.getX() * 16;
-			final int z = 4 + random.nextInt(8) + source.getZ() * 16;
-			final Block high = world.getHighestBlockAt(x, z);
-			if (!high.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS)) {
-				return;
-			}
-			final int maxY = high.getY();
-			if (maxY < 55) {
-				return;
-			}
-			final Set<XYZ> snake = selectBlocksForTree(world, random, x, maxY - 5, z);
-			buildTree(world, snake.toArray(new XYZ[snake.size()]));
-			for (final XYZ block : snake) {
-				world.unloadChunkRequest(block.x / 16, block.z / 16);
-			}
-		}
-	}
+                // spawn custom large spruce trees more frequently
+                if (random.nextInt(100) < 20) {
+                        final int x = 4 + random.nextInt(8) + source.getX() * 16;
+                        final int z = 4 + random.nextInt(8) + source.getZ() * 16;
+
+                        final Block ground = findGround(world, x, z);
+                        final Material groundType = ground.getType();
+                        if (groundType == Material.WATER || groundType == Material.LAVA) {
+                                return;
+                        }
+                        if (groundType != Material.GRASS_BLOCK && groundType != Material.DIRT) {
+                                ground.setType(Material.GRASS_BLOCK, false);
+                        }
+
+                        final int maxY = ground.getY();
+                        if (maxY < 55) {
+                                return;
+                        }
+                        final Set<XYZ> snake = selectBlocksForTree(world, random, x, maxY - 5, z);
+                        buildTree(world, snake.toArray(new XYZ[snake.size()]));
+                }
+        }
 
 	private static Set<XYZ> selectBlocksForTree(final World world, final Random r, final int blockX, int blockY, final int blockZ) {
 		final Set<XYZ> snakeBlocks = new HashSet<>();
@@ -123,7 +127,7 @@ public class PopulatorCustomTrees extends BlockPopulator {
 		for (final Integer key : sortedKeys) {
 			final ArrayList<Block> slice = slices.get(key);
 			for (final Block b : slice) {
-				b.setTypeIdAndData(17, (byte) 1, false);
+                        b.setType(Material.SPRUCE_LOG, false);
 			}
 //			if (!buildLayer1) {
 //				ArrayList<Block> toBranches = new ArrayList<Block>();
@@ -216,8 +220,8 @@ public class PopulatorCustomTrees extends BlockPopulator {
 
 		for (final Block b : blocks) {
 			final BlockFace dir = getBuildDirection(b);
-			final Block handle = b.getRelative(dir);
-			handle.setTypeIdAndData(17, (byte) 1, false);
+                        final Block handle = b.getRelative(dir);
+                        handle.setType(Material.SPRUCE_LOG, false);
 			branches.add(handle);
 			switch (dir) {
 				case NORTH:
@@ -240,7 +244,7 @@ public class PopulatorCustomTrees extends BlockPopulator {
 		}
 		if (!branches.isEmpty()) {
 			for (final Block branch : branches) {
-				branch.setTypeIdAndData(17, (byte) 1, false);
+                                branch.setType(Material.SPRUCE_LOG, false);
 				populateTreeBranch(branch, 2);
 			}
 		}
@@ -251,13 +255,13 @@ public class PopulatorCustomTrees extends BlockPopulator {
 
 		for (final Block b : blocks) {
 			final BlockFace dir = getBuildDirection(b);
-			final Block handle = b.getRelative(dir);
-			handle.setTypeIdAndData(17, (byte) 1, false);
+                        final Block handle = b.getRelative(dir);
+                        handle.setType(Material.SPRUCE_LOG, false);
 			branches.add(handle);
 		}
 		if (!branches.isEmpty()) {
 			for (final Block branch : branches) {
-				branch.setTypeIdAndData(17, (byte) 1, false);
+                                branch.setType(Material.SPRUCE_LOG, false);
 				populateTreeBranch(branch, 2);
 			}
 		}
@@ -269,11 +273,11 @@ public class PopulatorCustomTrees extends BlockPopulator {
 			branches.add(block);
 		}
 		if (!branches.isEmpty()) {
-			for (final Block branch : branches) {
-				branch.setTypeIdAndData(17, (byte) 1, false);
-				populateTreeBranch(branch, 2);
-			}
-		}
+                        for (final Block branch : branches) {
+                                branch.setType(Material.SPRUCE_LOG, false);
+                                populateTreeBranch(branch, 2);
+                        }
+                }
 	}
 
 	private static BlockFace getBuildDirection(final Block b) {
@@ -297,25 +301,37 @@ public class PopulatorCustomTrees extends BlockPopulator {
 		return true;
 	}
 
-	private static void populateTreeBranch(final Block block, final int radius) {
-		final int centerX = block.getX();
-		final int centerZ = block.getZ();
-		final int centerY = block.getY();
-		final World w = block.getWorld();
+        private static void populateTreeBranch(final Block block, final int radius) {
+                final int centerX = block.getX();
+                final int centerZ = block.getZ();
+                final int centerY = block.getY();
+                final World w = block.getWorld();
 
-		final int radius_check = radius * radius + 1;
+                final int radius_check = radius * radius + 1;
 
-		for (int x = -radius; x <= radius; x++) {
-			for (int z = -radius; z <= radius; z++) {
-				for (int y = -radius; y <= radius; y++) {
-					if (x * x + y * y + z * z <= radius_check) {
-						final Block b = w.getBlockAt(centerX + x, centerY + y, centerZ + z);
-						if (b.isEmpty()) {
-							b.setTypeIdAndData(18, (byte) 1, false);
-						}
-					}
-				}
-			}
-		}
-	}
+                for (int x = -radius; x <= radius; x++) {
+                        for (int z = -radius; z <= radius; z++) {
+                                for (int y = -radius; y <= radius; y++) {
+                                        if (x * x + y * y + z * z <= radius_check) {
+                                                final Block b = w.getBlockAt(centerX + x, centerY + y, centerZ + z);
+                                                if (b.isEmpty()) {
+                                                        b.setType(Material.SPRUCE_LEAVES, false);
+                                                }
+                                        }
+                                }
+                        }
+                }
+        }
+
+        private static Block findGround(final World world, final int x, final int z) {
+                Block block = world.getHighestBlockAt(x, z);
+                while (block.getY() > world.getMinHeight() && isTreeMaterial(block.getType())) {
+                        block = block.getRelative(BlockFace.DOWN);
+                }
+                return block;
+        }
+
+        private static boolean isTreeMaterial(final Material mat) {
+                return mat.name().endsWith("_LOG") || mat.name().endsWith("_LEAVES");
+        }
 }
