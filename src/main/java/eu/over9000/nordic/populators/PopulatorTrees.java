@@ -97,7 +97,8 @@ public class PopulatorTrees extends BlockPopulator {
                 final World world = chunk.getWorld();
                 int y = world.getMaxHeight() - 1;
                 Block block = chunk.getBlock(relX, y, relZ);
-                while (block.getY() > world.getMinHeight() && isTreeMaterial(block.getType())) {
+                while (block.getY() > world.getMinHeight()
+                                && (block.isEmpty() || isTreeMaterial(block.getType()))) {
                         block = block.getRelative(BlockFace.DOWN);
                 }
                 return block;
