@@ -12,4 +12,4 @@ screenshots: http://imgur.com/a/r7v5x
 
 This fork targets Paper 1.21.5 and requires Java 21. Worlds can be created via Multiverse using the generator name "Nordic".
 The terrain now uses taiga biomes with dense spruce forests. Weather behaves normally according to the server settings.
-Tree populators spawn significantly more trees for lush woodlands, including plenty of small spruce trees alongside the towering giants.
+Tree populators create highly randomised spruce woodlands, mixing many small trees with the occasional tall giant for a natural feel.

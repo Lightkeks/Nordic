@@ -29,8 +29,8 @@ public class PopulatorTrees extends BlockPopulator {
 
         @Override
         public void populate(final World world, final Random random, final Chunk source) {
-                // spawn large spruce trees
-                final int largeTrees = 3 + random.nextInt(4); // 3-6
+                // spawn large spruce trees with a wider random range
+                final int largeTrees = 2 + random.nextInt(7); // 2-8
                 for (int t = 0; t < largeTrees; t++) {
                         final int tree_x = random.nextInt(15);
                         final int tree_z = random.nextInt(15);
@@ -43,15 +43,15 @@ public class PopulatorTrees extends BlockPopulator {
                                 continue;
                         }
 
-                        if (random.nextInt(10) < 3) {
+                        if (random.nextBoolean()) {
                                 world.generateTree(high, TreeType.TALL_REDWOOD);
                         } else {
                                 world.generateTree(high, TreeType.REDWOOD);
                         }
                 }
 
-                // spawn many small spruce trees everywhere, not just near water
-                final int smallTrees = 8 + random.nextInt(10); // 8-17
+                // spawn many small spruce trees everywhere, with more variety
+                final int smallTrees = 12 + random.nextInt(14); // 12-25
                 for (int t = 0; t < smallTrees; t++) {
                         final int tree_x = random.nextInt(15);
                         final int tree_z = random.nextInt(15);
@@ -63,7 +63,8 @@ public class PopulatorTrees extends BlockPopulator {
                         if (ground != Material.GRASS_BLOCK && ground != Material.DIRT) {
                                 continue;
                         }
-                        world.generateTree(high, TreeType.REDWOOD); // smaller spruce variant
+                        final TreeType type = random.nextInt(5) == 0 ? TreeType.TALL_REDWOOD : TreeType.REDWOOD;
+                        world.generateTree(high, type); // smaller spruce variant
                 }
         }
 }
