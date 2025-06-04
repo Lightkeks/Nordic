@@ -39,8 +39,8 @@ public class PopulatorLakes extends BlockPopulator {
 	private static final int CREEK_CHANCE = 85;
 	private static final int MAX_CREEK_LENGTH = 125;
 
-	private static final EnumSet<Material> TREE_MATERIALS = EnumSet.of(Material.LOG, Material.LEAVES);
-	private static final EnumSet<Material> GROUND_MATERIALS = EnumSet.of(Material.DIRT, Material.GRASS);
+        private static final EnumSet<Material> TREE_MATERIALS = EnumSet.of(Material.OAK_LOG, Material.OAK_LEAVES);
+        private static final EnumSet<Material> GROUND_MATERIALS = EnumSet.of(Material.DIRT, Material.GRASS_BLOCK);
 	private static final EnumSet<BlockFace> FACES_TO_CHECK = EnumSet.of(BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH);
 
 
@@ -170,8 +170,8 @@ public class PopulatorLakes extends BlockPopulator {
 		for (final Block toAir : collected_blocks_air) {
 			if (toAir.getY() <= 48) {
 				toAir.setType(Material.WATER);
-			} else if (toAir.getType() != Material.LOG &&
-					toAir.getType() != Material.LEAVES &&
+                        } else if (toAir.getType() != Material.OAK_LOG &&
+                                        toAir.getType() != Material.OAK_LEAVES &&
 					toAir.getType() != Material.RED_MUSHROOM &&
 					toAir.getType() != Material.VINE &&
 					toAir.getType() != Material.GLOWSTONE) {
@@ -345,9 +345,9 @@ public class PopulatorLakes extends BlockPopulator {
 		}
 
 		//Build the First water layer
-		for (final Block block : top_layer) {
-			block.setType(Material.STATIONARY_WATER);
-		}
+                for (final Block block : top_layer) {
+                        block.setType(Material.WATER);
+                }
 
 		// "Stepped" Ground
 		Set<Block> working_layer = lower_layer(top_layer);
@@ -361,7 +361,7 @@ public class PopulatorLakes extends BlockPopulator {
 					}
 				} else {
 					next_layer.add(block.getRelative(0, -1, 0));
-					block.setType(Material.STATIONARY_WATER);
+                                        block.setType(Material.WATER);
 				}
 			}
 			working_layer = next_layer;

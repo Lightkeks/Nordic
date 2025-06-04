@@ -53,11 +53,8 @@ public class PopulatorCaves extends BlockPopulator {
 			}
 
 			final int y = random.nextInt(maxY);
-			final Set<XYZ> snake = selectBlocksForCave(world, random, x, y, z);
-			buildCave(world, snake.toArray(new XYZ[snake.size()]));
-			for (final XYZ block : snake) {
-				world.unloadChunkRequest(block.x / 16, block.z / 16);
-			}
+                        final Set<XYZ> snake = selectBlocksForCave(world, random, x, y, z);
+                        buildCave(world, snake.toArray(new XYZ[snake.size()]));
 		}
 	}
 

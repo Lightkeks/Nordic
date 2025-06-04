@@ -46,9 +46,9 @@ public class PopulatorMushrooms extends BlockPopulator {
 				for (int flower_x = 0; flower_x < 16; flower_x++) {
 					for (int flower_z = 0; flower_z < 16; flower_z++) {
 						final Block handle = world.getBlockAt(flower_x + source.getX() * 16, getHighestEmptyBlockYAtIgnoreTreesAndFoliage(world, flower_x + source.getX() * 16, flower_z + source.getZ() * 16), flower_z + source.getZ() * 16);
-						if (handle.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS) && isRelativeTo(handle, Material.LOG) && handle.isEmpty()) {
-							handle.setType(mushroom);
-							placed++;
+                                                if (handle.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS_BLOCK) && isRelativeTo(handle, Material.OAK_LOG) && handle.isEmpty()) {
+                                                    handle.setType(mushroom);
+                                                    placed++;
 							if (placed >= mushroomcount) {
 								return;
 							}
@@ -59,23 +59,23 @@ public class PopulatorMushrooms extends BlockPopulator {
 		}
 	}
 
-	private boolean isRelativeTo(final Block block, final Material material) {
-		for (final BlockFace blockFace : BlockFace.values()) {
-			if (block.getRelative(blockFace).getType().equals(material)) {
-				return true;
+        private boolean isRelativeTo(final Block block, final Material material) {
+                for (final BlockFace blockFace : BlockFace.values()) {
+                        if (block.getRelative(blockFace).getType().equals(material)) {
+                                return true;
 			}
 		}
 		return false;
 	}
 
-	private int getHighestEmptyBlockYAtIgnoreTreesAndFoliage(final World w, final int x, final int z) {
-		for (int y = 127; y >= 1; y--) {
-			final Block handle = w.getBlockAt(x, y - 1, z);
-			final int id = handle.getTypeId();
-			if (id != 0 && id != 17 && id != 18 && id != 37 && id != 38) {
-				return y;
-			}
-		}
-		return 0;
-	}
+        private int getHighestEmptyBlockYAtIgnoreTreesAndFoliage(final World w, final int x, final int z) {
+                for (int y = 127; y >= 1; y--) {
+                        final Block handle = w.getBlockAt(x, y - 1, z);
+                        final Material type = handle.getType();
+                        if (!type.isAir() && type != Material.OAK_LOG && type != Material.OAK_LEAVES && type != Material.DANDELION && type != Material.POPPY) {
+                                return y;
+                        }
+                }
+                return 0;
+        }
 }
