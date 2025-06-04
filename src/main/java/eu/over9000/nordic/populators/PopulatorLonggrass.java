@@ -37,7 +37,7 @@ public class PopulatorLonggrass extends BlockPopulator {
 				if (chance < 33) {
 					final Block handle = world.getHighestBlockAt(x + source.getX() * 16, z + source.getZ() * 16);
                                         if (handle.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS_BLOCK)) {
-                                                handle.setType(Material.GRASS, false);
+                                                handle.setType(Material.SHORT_GRASS, false);
                                         }
 				}
 			}

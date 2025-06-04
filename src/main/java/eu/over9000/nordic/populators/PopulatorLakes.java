@@ -21,9 +21,11 @@ package eu.over9000.nordic.populators;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.generator.BlockPopulator;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,8 +34,10 @@ public class PopulatorLakes extends BlockPopulator {
 
 
 	private static final int MIN_BLOCK_COUNT = 450;
-	private static final int MAX_BLOCK_COUNT = 900;
-	private static final int LAKE_CHANCE = 3;
+        private static final int MAX_BLOCK_COUNT = 900;
+        private static final int LAKE_CHANCE = 3;
+        private static final int CREEK_CHANCE = 85;
+        private static final int MAX_CREEK_LENGTH = 125;
 
         private static final EnumSet<Material> TREE_MATERIALS = EnumSet.of(Material.OAK_LOG, Material.OAK_LEAVES);
         private static final EnumSet<Material> GROUND_MATERIALS = EnumSet.of(Material.DIRT, Material.GRASS_BLOCK);
@@ -56,13 +60,20 @@ public class PopulatorLakes extends BlockPopulator {
 		}
 
 		final Set<Block> lake_form = collectLakeLayout(world, lake_start, random);
-		final Set<Block>[] form_result = startLakeBuildProcess(world, lake_form);
-		if (form_result == null) {
-			return;
-		}
-                buildLake(form_result[0], random);
+                final Set<Block>[] form_result = startLakeBuildProcess(world, lake_form);
+                if (form_result == null) {
+                        return;
+                }
+                final Block creekStart = buildLake(form_result[0], random);
 
-		buildAirAndWaterfall(form_result[0], form_result[1], random);
+                buildAirAndWaterfall(form_result[0], form_result[1], random);
+
+                if (creekStart != null && random.nextInt(100) < CREEK_CHANCE) {
+                        final List<Block> creekBlocks = collectCreekBlocks(world, creekStart, random);
+                        if (creekBlocks != null) {
+                                buildCreek(world, creekBlocks);
+                        }
+                }
 
 
 	}
@@ -311,15 +322,119 @@ public class PopulatorLakes extends BlockPopulator {
 		return false;
 	}
 
-	private void buildWaterfall(final Block block) {
-		final BlockFace[] faces = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
-		for (final BlockFace f : faces) {
-			final Block r = block.getRelative(f);
-			if (!r.isEmpty()) {
-				r.setType(Material.WATER);
-				return;
-			}
-		}
-	}
+        private void buildWaterfall(final Block block) {
+                final BlockFace[] faces = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+                for (final BlockFace f : faces) {
+                        final Block r = block.getRelative(f);
+                        if (!r.isEmpty()) {
+                                r.setType(Material.WATER);
+                                return;
+                        }
+                }
+        }
+
+        private List<Block> collectCreekBlocks(final World world, final Block creekStart, final Random random) {
+                final int checkRadius = 7;
+                Vector mainDir = null;
+
+                int highestDiff = 0;
+                for (int modX = -checkRadius; modX <= checkRadius; modX++) {
+                        for (int modZ = -checkRadius; modZ <= checkRadius; modZ++) {
+                                final Block toCheck = world.getHighestBlockAt(modX + creekStart.getX(), modZ + creekStart.getZ());
+                                final int diff = creekStart.getY() - toCheck.getY();
+                                if (diff > highestDiff) {
+                                        highestDiff = diff;
+                                        mainDir = new Vector(toCheck.getX() - creekStart.getX(), 0, toCheck.getZ() - creekStart.getZ());
+                                }
+                        }
+                }
+
+                if (mainDir != null) {
+                        final List<Block> creekBlocks = new ArrayList<>();
+                        Location current = creekStart.getRelative(0, 10, 0).getLocation();
+                        mainDir = mainDir.normalize().multiply(2);
+                        int steps = 0;
+                        while (!world.getHighestBlockAt(current).getRelative(0, -1, 0).isLiquid() && steps < MAX_CREEK_LENGTH) {
+                                creekBlocks.add(current.getBlock());
+                                current = current.add(mainDir);
+                                mainDir = rotateVector(mainDir, random.nextDouble() * 0.5 - 0.25);
+                                steps++;
+                        }
+                        if (steps < MAX_CREEK_LENGTH) {
+                                return creekBlocks;
+                        }
+                }
+                return null;
+        }
+
+        private void buildCreek(final World world, final List<Block> centerBlocks) {
+                final Set<Block> air = new HashSet<>();
+                final Set<Block> water = new HashSet<>();
+
+                final int radius = 3;
+                final int radiusSquared = 9;
+                int lastY = world.getMaxHeight();
+
+                final Set<Block> circle = new HashSet<>();
+                for (final Block center : centerBlocks) {
+                        circle.clear();
+                        for (int xMod = -radius; xMod <= radius; xMod++) {
+                                for (int zMod = -radius; zMod <= radius; zMod++) {
+                                        if ((xMod * xMod + zMod * zMod) < radiusSquared) {
+                                                circle.add(center.getRelative(xMod, 0, zMod));
+                                        }
+                                }
+                        }
+
+                        int lowest = world.getMaxHeight();
+                        int highest = 0;
+                        for (final Block block : circle) {
+                                final int x = block.getX();
+                                final int z = block.getZ();
+                                final int compare = world.getHighestBlockYAt(x, z);
+
+                                if (compare < lowest) {
+                                        lowest = compare;
+                                }
+                                if (compare > highest) {
+                                        highest = compare;
+                                }
+                        }
+
+                        if (lowest > lastY) {
+                                lowest = lastY;
+                        } else {
+                                lastY = lowest;
+                                if (lastY < 48) {
+                                        lastY = 48;
+                                        lowest = 48;
+                                }
+                        }
+
+                        for (final Block block : circle) {
+                                water.add(world.getBlockAt(block.getX(), lowest - 3, block.getZ()));
+                                for (int y = lowest - 2; y <= highest; y++) {
+                                        air.add(world.getBlockAt(block.getX(), y, block.getZ()));
+                                }
+                        }
+                }
+
+                for (final Block toWater : water) {
+                        toWater.setType(Material.WATER);
+                }
+                for (final Block toAir : air) {
+                        if (toAir.getY() <= 48) {
+                                toAir.setType(Material.WATER);
+                        } else if (!TREE_MATERIALS.contains(toAir.getType()) && !toAir.getType().equals(Material.RED_MUSHROOM) && !toAir.getType().equals(Material.VINE) && !toAir.getType().equals(Material.GLOWSTONE)) {
+                                toAir.setType(Material.AIR);
+                        }
+                }
+        }
+
+        private Vector rotateVector(final Vector dir, final double angle) {
+                final double newX = dir.getX() * Math.cos(angle) - dir.getZ() * Math.sin(angle);
+                final double newZ = dir.getX() * Math.sin(angle) + dir.getZ() * Math.cos(angle);
+                return new Vector(newX, 0, newZ);
+        }
 
 }
