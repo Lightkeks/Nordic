@@ -9,3 +9,7 @@ You have to know how to edit the bukkit.yml or use a plugin that does this part 
 The command & permission beneath are not needed if you use Pinapp or edit the bukkit.yml, i just left them in so its possible to take a look on a Nordic world without doing any configuration stuff.
 
 screenshots: http://imgur.com/a/r7v5x
+
+This fork targets Paper 1.21.5 and requires Java 21. Worlds can be created via Multiverse using the generator name "Nordic".
+The terrain now uses taiga biomes with dense spruce forests. Weather behaves normally according to the server settings.
+Tree populators spawn significantly more trees for lush woodlands.

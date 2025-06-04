@@ -29,23 +29,27 @@ public class PopulatorTrees extends BlockPopulator {
 
 	@Override
 	public void populate(final World world, final Random random, final Chunk source) {
-		final int treecount = random.nextInt(3);
+                // further increase the amount of trees per chunk
+                // spawn between eight and fifteen spruce trees
+                final int treecount = 8 + random.nextInt(8);
 
 		for (int t = 0; t <= treecount; t++) {
 			final int tree_x = random.nextInt(15);
 			final int tree_z = random.nextInt(15);
 
-			final Block block = world.getHighestBlockAt(tree_x + source.getX() * 16, tree_z + source.getZ() * 16);
-			final Location high = block.getLocation();
-			if (!block.getRelative(BlockFace.DOWN).getType().equals(Material.GRASS)) {
-				return;
-			}
-			if (random.nextInt(10) < 1) {
-				world.generateTree(high, TreeType.TALL_REDWOOD);
+                        final Block block = world.getHighestBlockAt(tree_x + source.getX() * 16, tree_z + source.getZ() * 16);
+                        final Location high = block.getLocation();
 
-			} else {
-				world.generateTree(high, TreeType.REDWOOD);
-			}
+                        final Material ground = block.getRelative(BlockFace.DOWN).getType();
+                        if (ground != Material.GRASS_BLOCK && ground != Material.DIRT) {
+                                continue;
+                        }
+                        // raise chance for tall spruce varieties
+                        if (random.nextInt(10) < 3) {
+                                world.generateTree(high, TreeType.TALL_REDWOOD);
+                        } else {
+                                world.generateTree(high, TreeType.REDWOOD);
+                        }
 		}
 	}
 }
