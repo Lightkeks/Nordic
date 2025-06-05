@@ -30,6 +30,7 @@ import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import eu.over9000.nordic.MVWorldLoadListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -44,8 +45,14 @@ public class Nordic extends JavaPlugin {
         private boolean logChunkGenTime;
 
 	private static final String DEFAULT_WORLD_NAME = "world_nordic";
-	private static final String WORLD_PREFIX = "world_";
+        private static final String WORLD_PREFIX = "world_";
         private static final List<BlockPopulator> populators = buildPopulators();
+
+        @Override
+        public void onLoad() {
+                // Register a listener to detect late world loads (e.g. via Multiverse)
+                getServer().getPluginManager().registerEvents(new MVWorldLoadListener(this), this);
+        }
 
         public boolean isLogChunkGenTime() {
                 return logChunkGenTime;
@@ -69,6 +76,14 @@ public class Nordic extends JavaPlugin {
                 wgen = new NordicChunkGenerator(populators, this);
                 getLogger().info("[Nordic] Assigned default generator: " + wgen.getClass().getSimpleName());
                 getLogger().info("[Nordic] Registered 0 biome(s), " + populators.size() + " structure(s)");
+
+                // Check already loaded worlds for the Nordic generator
+                for (final World world : getServer().getWorlds()) {
+                        final ChunkGenerator gen = world.getGenerator();
+                        if (gen instanceof NordicChunkGenerator) {
+                                getLogger().info("[Nordic] Found active Nordic world: " + world.getName());
+                        }
+                }
         }
 
 	@Override
@@ -159,9 +174,16 @@ public class Nordic extends JavaPlugin {
         public ChunkGenerator getDefaultWorldGenerator(final String worldName, final String id) {
                 if (worldName == null || worldName.isEmpty()) {
                         getLogger().warning("[Nordic] \u26A0\uFE0F Unknown world requested: '" + worldName + "' – falling back to default generator.");
-                } else {
-                        getLogger().info("[Nordic] getDefaultWorldGenerator(" + worldName + ")");
+                        return null;
                 }
+
+                if (!DEFAULT_WORLD_NAME.equals(worldName)) {
+                        getLogger().info("[Nordic] Ignoring unrelated world: " + worldName);
+                        return null;
+                }
+
+                getLogger().info("[Nordic] getDefaultWorldGenerator(" + worldName + ")");
+
                 if (wgen == null) {
                         wgen = new NordicChunkGenerator(populators, this);
                 }
