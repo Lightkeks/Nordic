@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import eu.over9000.nordic.MVWorldLoadListener;
 import java.util.ArrayList;
@@ -45,8 +46,8 @@ public class Nordic extends JavaPlugin {
         private boolean logChunkGenTime;
 
 	private static final String DEFAULT_WORLD_NAME = "world_nordic";
-        private static final String WORLD_PREFIX = "world_";
-        private static final List<BlockPopulator> populators = buildPopulators();
+    private static final String WORLD_PREFIX = "world_";
+    private List<BlockPopulator> populators;
 
        @Override
        public void onLoad() {
@@ -74,6 +75,7 @@ public class Nordic extends JavaPlugin {
                 if (getServer().getPluginManager().isPluginEnabled("Multiverse-Core")) {
                         getLogger().info("[Nordic] Multiverse-Core detected – checking for world import consistency.");
                 }
+                populators = buildPopulators(this);
                 wgen = new NordicChunkGenerator(populators, this);
                 getLogger().info("[Nordic] Assigned default generator: " + wgen.getClass().getSimpleName());
                 getLogger().info("[Nordic] Registered 0 biome(s), " + populators.size() + " structure(s)");
@@ -141,21 +143,21 @@ public class Nordic extends JavaPlugin {
 	 *
 	 * @return a ArrayList<BlockPopulator> that contains all populators
 	 */
-	private static List<BlockPopulator> buildPopulators() {
-		final ArrayList<BlockPopulator> populators = new ArrayList<>();
-		populators.add(new PopulatorLakes());
-		populators.add(new PopulatorGravel());
-		populators.add(new PopulatorLavaLakes());
-		populators.add(new PopulatorCaves());
-		populators.add(new PopulatorOres());
-		populators.add(new PopulatorCustomTrees());
-		populators.add(new PopulatorTrees());
-		populators.add(new PopulatorFlowers());
-                populators.add(new PopulatorMushrooms());
-                populators.add(new PopulatorLonggrass());
-                populators.add(new PopulatorSnow());
-                return populators;
-        }
+    private static List<BlockPopulator> buildPopulators(final Plugin plugin) {
+            final ArrayList<BlockPopulator> populators = new ArrayList<>();
+            populators.add(new PopulatorLakes());
+            populators.add(new PopulatorGravel());
+            populators.add(new PopulatorLavaLakes());
+            populators.add(new PopulatorCaves());
+            populators.add(new PopulatorOres());
+            populators.add(new PopulatorCustomTrees());
+            populators.add(new PopulatorTrees(plugin));
+            populators.add(new PopulatorFlowers());
+            populators.add(new PopulatorMushrooms());
+            populators.add(new PopulatorLonggrass());
+            populators.add(new PopulatorSnow());
+            return populators;
+    }
 
 	/**
 	 * Builds a seed from a string

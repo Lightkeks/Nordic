@@ -18,6 +18,7 @@
  */
 package eu.over9000.nordic.populators;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,10 +26,17 @@ import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.generator.BlockPopulator;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Random;
 
 public class PopulatorTrees extends BlockPopulator {
+
+       private final Plugin plugin;
+
+       public PopulatorTrees(final Plugin plugin) {
+               this.plugin = plugin;
+       }
 
        @Override
        public void populate(final World world, final Random ignored, final Chunk source) {
@@ -57,7 +65,7 @@ public class PopulatorTrees extends BlockPopulator {
                        }
 
                        final Location loc = top.getLocation().add(0, 1, 0);
-                       world.generateTree(loc, TreeType.REDWOOD);
+                       Bukkit.getScheduler().runTask(plugin, () -> world.generateTree(loc, TreeType.REDWOOD));
                }
        }
 
