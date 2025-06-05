@@ -48,9 +48,11 @@ public class PopulatorSnow extends BlockPopulator {
                                 final Block highest = world.getHighestBlockAt(absX, absZ);
                                 final Block snowSpot = highest.getRelative(BlockFace.UP);
 
-                                if (snowSpot.getY() > 60 && snowSpot.getType() == Material.AIR) {
+                                if (snowSpot.getY() > 80 && snowSpot.getType() == Material.AIR) {
                                         final Material base = highest.getType();
-                                        if (base != Material.WATER && base != Material.LAVA) {
+                                        if (base != Material.WATER && base != Material.LAVA
+                                                        && !base.name().endsWith("_LEAVES")
+                                                        && !base.name().endsWith("_LOG")) {
                                                 snowSpot.setType(Material.SNOW, false);
 
                                                 final BlockData data = snowSpot.getBlockData();

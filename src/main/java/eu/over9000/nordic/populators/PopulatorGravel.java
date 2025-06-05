@@ -31,7 +31,12 @@ import java.util.Random;
 public class PopulatorGravel extends BlockPopulator {
 
 
-        private static final EnumSet<Material> valid = EnumSet.of(Material.DIRT, Material.STONE, Material.GRASS_BLOCK);
+        private static final EnumSet<Material> valid = EnumSet.of(
+                        Material.DIRT,
+                        Material.STONE,
+                        Material.GRASS_BLOCK,
+                        Material.PODZOL,
+                        Material.FARMLAND);
 
 
 	@Override

@@ -259,11 +259,15 @@ public class NordicChunkGenerator extends ChunkGenerator {
                 }
                 if (height <= 77 || rnd.nextBoolean()) {
                         final int soil_depth = rnd.nextInt(4);
-                        if (grass) {
-                                setMaterialAt(chunkData, x, height, z, Material.GRASS_BLOCK);
-                        } else {
-                                setMaterialAt(chunkData, x, height, z, Material.DIRT);
+                        Material top = grass ? Material.GRASS_BLOCK : Material.DIRT;
+                        final double chance = rnd.nextDouble();
+                        if (chance < 0.1) {
+                                top = Material.PODZOL;
+                        } else if (chance < 0.15) {
+                                top = Material.FARMLAND;
                         }
+
+                        setMaterialAt(chunkData, x, height, z, top);
                         for (int y = height - 1; y >= height - soil_depth; y--) {
                                 setMaterialAt(chunkData, x, y, z, Material.DIRT);
                         }

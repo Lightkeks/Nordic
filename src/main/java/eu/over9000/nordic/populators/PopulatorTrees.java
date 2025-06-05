@@ -34,8 +34,8 @@ public class PopulatorTrees extends BlockPopulator {
                final long worldSeed = world.getSeed();
                final Random seededRandom = new Random(worldSeed + source.getX() * 341873128712L + source.getZ() * 132897987541L);
 
-               // spawn plenty of small spruce trees across all heights
-               final int treeCount = 8 + seededRandom.nextInt(8); // 8-15 trees per chunk
+               // spawn small spruce trees across all heights
+               final int treeCount = 7 + seededRandom.nextInt(8); // 7-14 trees per chunk
 
                for (int i = 0; i < treeCount; i++) {
                        final int x = chunkX + seededRandom.nextInt(32) - 8;
@@ -46,7 +46,8 @@ public class PopulatorTrees extends BlockPopulator {
                        }
 
                        final Block top = world.getHighestBlockAt(x, z);
-                       if (top.isLiquid() || top.getType() != Material.GRASS_BLOCK) {
+                       final Material type = top.getType();
+                       if (top.isLiquid() || (type != Material.GRASS_BLOCK && type != Material.PODZOL)) {
                                continue;
                        }
 

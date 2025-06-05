@@ -14,3 +14,4 @@ This fork targets Paper 1.21.5 and requires Java 21. Worlds can be created via M
 The terrain now uses taiga biomes with spruce forests. Weather behaves normally according to the server settings.
 Tree populators create randomised spruce woodlands. Large trees appear a bit more often among many smaller ones. The new terrain settings raise mountains into steep cliffs and carve deep fjord-like inlets with longer creeks.
 Small spruce trees now spawn across all heights in great numbers, blanketing even high cliffs so forests feel lush and dense.
+Surface blocks now include patches of podzol and farmland, with snow forming only on high peaks above the treetops.

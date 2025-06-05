@@ -40,7 +40,11 @@ public class PopulatorLakes extends BlockPopulator {
         private static final int MAX_CREEK_LENGTH = 200;
 
         private static final EnumSet<Material> TREE_MATERIALS = EnumSet.of(Material.OAK_LOG, Material.OAK_LEAVES);
-        private static final EnumSet<Material> GROUND_MATERIALS = EnumSet.of(Material.DIRT, Material.GRASS_BLOCK);
+        private static final EnumSet<Material> GROUND_MATERIALS = EnumSet.of(
+                        Material.DIRT,
+                        Material.GRASS_BLOCK,
+                        Material.PODZOL,
+                        Material.FARMLAND);
 	private static final EnumSet<BlockFace> FACES_TO_CHECK = EnumSet.of(BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH);
 
 

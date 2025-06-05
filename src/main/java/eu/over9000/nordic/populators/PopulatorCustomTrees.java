@@ -44,7 +44,7 @@ public class PopulatorCustomTrees extends BlockPopulator {
 	public void populate(final World world, final Random random, final Chunk source) {
 
                 // occasionally spawn a custom large spruce tree
-                if (random.nextInt(100) < 20) {
+                if (random.nextInt(100) < 18) {
                         final int relX = 4 + random.nextInt(8);
                         final int relZ = 4 + random.nextInt(8);
                         final int x = relX + source.getX() * 16;
@@ -55,7 +55,8 @@ public class PopulatorCustomTrees extends BlockPopulator {
                         if (groundType == Material.WATER || groundType == Material.LAVA) {
                                 return;
                         }
-                        if (groundType != Material.GRASS_BLOCK && groundType != Material.DIRT) {
+                        if (groundType != Material.GRASS_BLOCK && groundType != Material.DIRT
+                                        && groundType != Material.PODZOL && groundType != Material.FARMLAND) {
                                 ground.setType(Material.GRASS_BLOCK, false);
                         }
 
