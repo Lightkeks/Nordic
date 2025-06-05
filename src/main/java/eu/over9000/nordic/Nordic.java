@@ -48,11 +48,10 @@ public class Nordic extends JavaPlugin {
         private static final String WORLD_PREFIX = "world_";
         private static final List<BlockPopulator> populators = buildPopulators();
 
-        @Override
-        public void onLoad() {
-                // Register a listener to detect late world loads (e.g. via Multiverse)
-                getServer().getPluginManager().registerEvents(new MVWorldLoadListener(this), this);
-        }
+       @Override
+       public void onLoad() {
+               // nothing to do here yet
+       }
 
         public boolean isLogChunkGenTime() {
                 return logChunkGenTime;
@@ -66,6 +65,8 @@ public class Nordic extends JavaPlugin {
         public void onEnable() {
                 saveDefaultConfig();
                 logChunkGenTime = getConfig().getBoolean("logChunkGenTime", false);
+                // Register a listener to detect late world loads (e.g. via Multiverse)
+                getServer().getPluginManager().registerEvents(new MVWorldLoadListener(this), this);
                 getLogger().info("[Nordic] Plugin v0.3.1-CODEX initialized");
                 if (!getServer().getWorlds().isEmpty()) {
                         getLogger().info("[Nordic] Detected world: " + getServer().getWorlds().get(0).getName());
