@@ -65,7 +65,19 @@ public class PopulatorTrees extends BlockPopulator {
                        }
 
                        final Location loc = top.getLocation().add(0, 1, 0);
-                       Bukkit.getScheduler().runTask(plugin, () -> world.generateTree(loc, TreeType.REDWOOD));
+                       Bukkit.getScheduler().runTask(plugin, () -> {
+                               if (!source.isLoaded()) {
+                                       return;
+                               }
+                               final int cx = loc.getBlockX() >> 4;
+                               final int cz = loc.getBlockZ() >> 4;
+                               if (!world.isChunkLoaded(cx, cz)) {
+                                       return;
+                               }
+                               if (loc.getBlock().getType().isAir()) {
+                                       world.generateTree(loc, TreeType.REDWOOD);
+                               }
+                       });
                }
        }
 

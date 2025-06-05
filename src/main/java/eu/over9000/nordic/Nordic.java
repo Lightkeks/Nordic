@@ -175,21 +175,17 @@ public class Nordic extends JavaPlugin {
 
         @Override
         public ChunkGenerator getDefaultWorldGenerator(final String worldName, final String id) {
-                if (worldName == null || worldName.isEmpty()) {
-                        getLogger().warning("[Nordic] \u26A0\uFE0F Unknown world requested: '" + worldName + "' – falling back to default generator.");
-                        return null;
-                }
-
-                if (!DEFAULT_WORLD_NAME.equals(worldName)) {
-                        getLogger().info("[Nordic] Ignoring unrelated world: " + worldName);
-                        return null;
-                }
-
                 getLogger().info("[Nordic] getDefaultWorldGenerator(" + worldName + ")");
 
                 if (wgen == null) {
                         wgen = new NordicChunkGenerator(populators, this);
+                        getLogger().info("[Nordic] Created new NordicChunkGenerator instance");
                 }
+
+                if (worldName == null || worldName.isEmpty()) {
+                        getLogger().warning("[Nordic] \u26A0\uFE0F Unknown world requested: '" + worldName + "' – using default generator anyway.");
+                }
+
                 return wgen;
         }
 
