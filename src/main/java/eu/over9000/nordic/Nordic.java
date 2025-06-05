@@ -50,10 +50,19 @@ public class Nordic extends JavaPlugin {
 	public void onDisable() {
 	}
 
-	@Override
-	public void onEnable() {
-		wgen = new NordicChunkGenerator(populators);
-	}
+        @Override
+        public void onEnable() {
+                getLogger().info("[Nordic] Plugin v0.3.1-CODEX initialized");
+                if (!getServer().getWorlds().isEmpty()) {
+                        getLogger().info("[Nordic] Detected world: " + getServer().getWorlds().get(0).getName());
+                }
+                if (getServer().getPluginManager().isPluginEnabled("Multiverse-Core")) {
+                        getLogger().info("[Nordic] Multiverse-Core detected – checking for world import consistency.");
+                }
+                wgen = new NordicChunkGenerator(populators);
+                getLogger().info("[Nordic] Assigned default generator: " + wgen.getClass().getSimpleName());
+                getLogger().info("[Nordic] Registered 0 biome(s), " + populators.size() + " structure(s)");
+        }
 
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
@@ -141,7 +150,11 @@ public class Nordic extends JavaPlugin {
 
         @Override
         public ChunkGenerator getDefaultWorldGenerator(final String worldName, final String id) {
-                getLogger().info("[Nordic] getDefaultWorldGenerator(" + worldName + ")");
+                if (worldName == null || worldName.isEmpty()) {
+                        getLogger().warning("[Nordic] \u26A0\uFE0F Unknown world requested: '" + worldName + "' – falling back to default generator.");
+                } else {
+                        getLogger().info("[Nordic] getDefaultWorldGenerator(" + worldName + ")");
+                }
                 if (wgen == null) {
                         wgen = new NordicChunkGenerator(populators);
                 }

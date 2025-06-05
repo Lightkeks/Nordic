@@ -44,7 +44,7 @@ public class PopulatorLakes extends BlockPopulator {
                         Material.DIRT,
                         Material.GRASS_BLOCK,
                         Material.PODZOL,
-                        Material.FARMLAND);
+                        Material.DIRT_PATH);
 	private static final EnumSet<BlockFace> FACES_TO_CHECK = EnumSet.of(BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH);
 
 

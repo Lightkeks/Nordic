@@ -264,7 +264,7 @@ public class NordicChunkGenerator extends ChunkGenerator {
                         if (chance < 0.1) {
                                 top = Material.PODZOL;
                         } else if (chance < 0.15) {
-                                top = Material.FARMLAND;
+                                top = Material.DIRT_PATH;
                         }
 
                         setMaterialAt(chunkData, x, height, z, top);

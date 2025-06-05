@@ -56,7 +56,7 @@ public class PopulatorCustomTrees extends BlockPopulator {
                                 return;
                         }
                         if (groundType != Material.GRASS_BLOCK && groundType != Material.DIRT
-                                        && groundType != Material.PODZOL && groundType != Material.FARMLAND) {
+                                        && groundType != Material.PODZOL && groundType != Material.DIRT_PATH) {
                                 ground.setType(Material.GRASS_BLOCK, false);
                         }
 

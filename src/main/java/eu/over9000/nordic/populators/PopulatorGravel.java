@@ -36,7 +36,7 @@ public class PopulatorGravel extends BlockPopulator {
                         Material.STONE,
                         Material.GRASS_BLOCK,
                         Material.PODZOL,
-                        Material.FARMLAND);
+                        Material.DIRT_PATH);
 
 
 	@Override
