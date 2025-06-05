@@ -69,8 +69,11 @@ public class PopulatorCustomTrees extends BlockPopulator {
                 }
         }
 
-	private static Set<XYZ> selectBlocksForTree(final World world, final Random r, final int blockX, int blockY, final int blockZ) {
-		final Set<XYZ> snakeBlocks = new HashSet<>();
+        private static Set<XYZ> selectBlocksForTree(final World world, final Random r, final int blockX, int blockY, final int blockZ) {
+                if (!world.isChunkLoaded(blockX >> 4, blockZ >> 4)) {
+                        return Collections.emptySet();
+                }
+                final Set<XYZ> snakeBlocks = new HashSet<>();
 		final int height = blockY + 20 + r.nextInt(5);
 		XYZ block = new XYZ();
 		while (true) {

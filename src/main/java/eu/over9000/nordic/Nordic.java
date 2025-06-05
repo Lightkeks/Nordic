@@ -41,10 +41,15 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class Nordic extends JavaPlugin {
         private NordicChunkGenerator wgen;
+        private boolean logChunkGenTime;
 
 	private static final String DEFAULT_WORLD_NAME = "world_nordic";
 	private static final String WORLD_PREFIX = "world_";
-	private static final List<BlockPopulator> populators = buildPopulators();
+        private static final List<BlockPopulator> populators = buildPopulators();
+
+        public boolean isLogChunkGenTime() {
+                return logChunkGenTime;
+        }
 
 	@Override
 	public void onDisable() {
@@ -52,6 +57,8 @@ public class Nordic extends JavaPlugin {
 
         @Override
         public void onEnable() {
+                saveDefaultConfig();
+                logChunkGenTime = getConfig().getBoolean("logChunkGenTime", false);
                 getLogger().info("[Nordic] Plugin v0.3.1-CODEX initialized");
                 if (!getServer().getWorlds().isEmpty()) {
                         getLogger().info("[Nordic] Detected world: " + getServer().getWorlds().get(0).getName());
@@ -59,7 +66,7 @@ public class Nordic extends JavaPlugin {
                 if (getServer().getPluginManager().isPluginEnabled("Multiverse-Core")) {
                         getLogger().info("[Nordic] Multiverse-Core detected – checking for world import consistency.");
                 }
-                wgen = new NordicChunkGenerator(populators);
+                wgen = new NordicChunkGenerator(populators, this);
                 getLogger().info("[Nordic] Assigned default generator: " + wgen.getClass().getSimpleName());
                 getLogger().info("[Nordic] Registered 0 biome(s), " + populators.size() + " structure(s)");
         }
@@ -156,7 +163,7 @@ public class Nordic extends JavaPlugin {
                         getLogger().info("[Nordic] getDefaultWorldGenerator(" + worldName + ")");
                 }
                 if (wgen == null) {
-                        wgen = new NordicChunkGenerator(populators);
+                        wgen = new NordicChunkGenerator(populators, this);
                 }
                 return wgen;
         }

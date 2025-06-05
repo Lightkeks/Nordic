@@ -49,20 +49,22 @@ public class NordicChunkGenerator extends ChunkGenerator {
 	private Voronoi voronoiGenBase2;
 	private Voronoi voronoiGenMountains;
 
-	private final List<BlockPopulator> populators;
+        private final List<BlockPopulator> populators;
+        private final Nordic plugin;
 
 	private long usedSeed;
 
 	/**
 	 * Default Constructor.
 	 */
-	public NordicChunkGenerator(final List<BlockPopulator> populators) {
+        public NordicChunkGenerator(final List<BlockPopulator> populators, final Nordic plugin) {
 
-		this.usedSeed = 1337L;
-		this.populators = populators;
+                this.usedSeed = 1337L;
+                this.populators = populators;
+                this.plugin = plugin;
 
-		changeSeed(usedSeed);
-	}
+                changeSeed(usedSeed);
+        }
 
 	/**
 	 * Sets the Material at the given Location
@@ -79,6 +81,7 @@ public class NordicChunkGenerator extends ChunkGenerator {
         public ChunkData generateChunkData(final World world, final Random random, final int x_chunk, final int z_chunk, final BiomeGrid biomes) {
                 checkSeed(world.getSeed());
 
+                final long start = System.nanoTime();
                 final ChunkData result = createChunkData(world);
 
 		int currheight;
@@ -143,6 +146,15 @@ public class NordicChunkGenerator extends ChunkGenerator {
 				// ##############################
 			}
 		}
+                if (plugin.isLogChunkGenTime()) {
+                        final long took = System.nanoTime() - start;
+                        final String msg = "[Nordic] Chunk generation at (x=" + x_chunk + ", z=" + z_chunk + ") took " + (took / 1_000_000L) + "ms";
+                        if (Thread.currentThread().getName().equals("Server thread") && took > 100_000_000L) {
+                                plugin.getLogger().warning(msg);
+                        } else {
+                                plugin.getLogger().info(msg);
+                        }
+                }
                 return result;
         }
 

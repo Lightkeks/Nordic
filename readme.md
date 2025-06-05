@@ -15,3 +15,4 @@ The terrain now uses taiga biomes with spruce forests. Weather behaves normally 
 Tree populators create randomised spruce woodlands. Large trees appear a bit more often among many smaller ones. The new terrain settings raise mountains into steep cliffs and carve deep fjord-like inlets with longer creeks.
 Small spruce trees now spawn across all heights in great numbers, blanketing even high cliffs so forests feel lush and dense.
 Surface blocks now include patches of podzol and paths, with snow forming only on high peaks above the treetops.
+Enable chunk generation timing logs by setting 'logChunkGenTime: true' in the plugin config.
