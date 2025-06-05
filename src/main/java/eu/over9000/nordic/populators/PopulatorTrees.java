@@ -18,7 +18,12 @@
  */
 package eu.over9000.nordic.populators;
 
-import org.bukkit.*;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.TreeType;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.generator.BlockPopulator;
 
 import java.util.Random;
