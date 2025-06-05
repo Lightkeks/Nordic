@@ -37,6 +37,16 @@ import java.util.Set;
  */
 public class PopulatorCaves extends BlockPopulator {
 
+       private static boolean isAir(final World world, final int x, final int y, final int z) {
+               if (!world.isChunkLoaded(x >> 4, z >> 4)) {
+                       return true;
+               }
+               if (y < world.getMinHeight() || y >= world.getMaxHeight()) {
+                       return true;
+               }
+               return world.getBlockAt(x, y, z).isEmpty();
+       }
+
 	/**
 	 * @see org.bukkit.generator.BlockPopulator#populate(org.bukkit.World,
 	 * java.util.Random, org.bukkit.Chunk)
@@ -70,23 +80,23 @@ public class PopulatorCaves extends BlockPopulator {
 
 			if (random.nextInt(20) == 0) {
 				blockY++;
-                        } else if (world.getBlockAt(blockX, blockY + 2, blockZ).isEmpty()) {
+                        } else if (isAir(world, blockX, blockY + 2, blockZ)) {
                             blockY += 2;
-                        } else if (world.getBlockAt(blockX + 2, blockY, blockZ).isEmpty()) {
+                        } else if (isAir(world, blockX + 2, blockY, blockZ)) {
                             blockX++;
-                        } else if (world.getBlockAt(blockX - 2, blockY, blockZ).isEmpty()) {
+                        } else if (isAir(world, blockX - 2, blockY, blockZ)) {
                             blockX--;
-                        } else if (world.getBlockAt(blockX, blockY, blockZ + 2).isEmpty()) {
+                        } else if (isAir(world, blockX, blockY, blockZ + 2)) {
                             blockZ++;
-                        } else if (world.getBlockAt(blockX, blockY, blockZ - 2).isEmpty()) {
+                        } else if (isAir(world, blockX, blockY, blockZ - 2)) {
                             blockZ--;
-                        } else if (world.getBlockAt(blockX + 1, blockY, blockZ).isEmpty()) {
+                        } else if (isAir(world, blockX + 1, blockY, blockZ)) {
                             blockX++;
-                        } else if (world.getBlockAt(blockX - 1, blockY, blockZ).isEmpty()) {
+                        } else if (isAir(world, blockX - 1, blockY, blockZ)) {
                             blockX--;
-                        } else if (world.getBlockAt(blockX, blockY, blockZ + 1).isEmpty()) {
+                        } else if (isAir(world, blockX, blockY, blockZ + 1)) {
                             blockZ++;
-                        } else if (world.getBlockAt(blockX, blockY, blockZ - 1).isEmpty()) {
+                        } else if (isAir(world, blockX, blockY, blockZ - 1)) {
                             blockZ--;
 			} else if (random.nextBoolean()) {
 				if (random.nextBoolean()) {
@@ -102,14 +112,14 @@ public class PopulatorCaves extends BlockPopulator {
 				}
 			}
 
-                        if (!world.getBlockAt(blockX, blockY, blockZ).isEmpty()) {
+                        if (!isAir(world, blockX, blockY, blockZ)) {
 				final int radius = 1 + random.nextInt(2);
 				final int radius2 = radius * radius + 1;
 				for (int x = -radius; x <= radius; x++) {
 					for (int y = -radius; y <= radius; y++) {
 						for (int z = -radius; z <= radius; z++) {
 							if (x * x + y * y + z * z <= radius2 && y >= 0 && y < 128) {
-                                                                if (world.getBlockAt(blockX + x, blockY + y, blockZ + z).isEmpty()) {
+                                                                if (isAir(world, blockX + x, blockY + y, blockZ + z)) {
 									airHits++;
 								} else {
 									block.x = blockX + x;
@@ -131,12 +141,18 @@ public class PopulatorCaves extends BlockPopulator {
 		return snakeBlocks;
 	}
 
-	static void buildCave(final World world, final XYZ[] snakeBlocks) {
-		for (final XYZ loc : snakeBlocks) {
-			final Block block = world.getBlockAt(loc.x, loc.y, loc.z);
-			if (!block.isEmpty() && !block.isLiquid() && block.getType() != Material.BEDROCK) {
-				block.setType(Material.AIR);
-			}
-		}
-	}
+        static void buildCave(final World world, final XYZ[] snakeBlocks) {
+                for (final XYZ loc : snakeBlocks) {
+                        if (!world.isChunkLoaded(loc.x >> 4, loc.z >> 4)) {
+                                continue;
+                        }
+                        if (loc.y < world.getMinHeight() || loc.y >= world.getMaxHeight()) {
+                                continue;
+                        }
+                        final Block block = world.getBlockAt(loc.x, loc.y, loc.z);
+                        if (!block.isEmpty() && !block.isLiquid() && block.getType() != Material.BEDROCK) {
+                                block.setType(Material.AIR);
+                        }
+                }
+        }
 }
